@@ -33,35 +33,35 @@ Sem taxas, sem premiação em dinheiro. Só a glória de chegar no topo do ranki
 
 ## Estado atual
 
-| Funcionalidade                                       | Status          |
-| ---------------------------------------------------- | --------------- |
-| Scaffold Next.js 16 + TypeScript strict + Tailwind 4 | ✅ Feito        |
-| NextAuth v5 — Google + GitHub OAuth                  | ✅ Feito        |
-| Prisma 7 + PostgreSQL (Neon) com adapter Neon        | ✅ Feito        |
-| Schema: User, Account, Session, Match, Prediction    | ✅ Feito        |
-| Seed: 48 jogos da Copa 2026                          | ✅ Feito        |
-| Motor de pontuação (`lib/scoring.ts`)                | ✅ Feito        |
-| Sistema de ranks (Torcedor → Lenda)                  | ✅ Feito        |
-| `GET /api/jogos` — lista 48 jogos                    | ✅ Feito        |
-| `POST /api/palpites` — salva com lock 5 min antes    | ✅ Feito        |
-| `GET /api/palpites` — histórico do usuário           | ✅ Feito        |
-| Rate limiting em `/api/palpites` (30 req/min)        | ✅ Feito        |
-| Integração football-data.org (rate limit + timeout)  | ✅ Feito        |
-| Cron job GitHub Actions (a cada 15 min)              | ✅ Feito        |
-| Security headers (X-Frame-Options, CSP…)             | ✅ Feito        |
-| CI GitHub Actions (lint + typecheck em PRs)          | ✅ Feito        |
-| Deploy Vercel (https://brasa-pi.vercel.app)          | ✅ Feito        |
-| Página `/` — home animada com Framer Motion          | ✅ Feito        |
-| Página `/login` — botões Google e GitHub             | ✅ Feito        |
-| Página `/jogos` — 48 jogos agrupados por fase/grupo  | ✅ Feito        |
-| Página `/palpites` — histórico do usuário logado     | ✅ Feito        |
-| Proteção de rotas via middleware (NextAuth)          | ✅ Feito        |
-| Admin guard por role ADMIN                           | ✅ Feito        |
-| Formulário de palpite na página de jogos             | 🚧 Em progresso |
-| Página `/ranking` — ranking geral                    | 🚧 Em progresso |
-| Painel admin para override de resultados             | ⏳ Pendente     |
-| Botão de sign out                                    | ⏳ Pendente     |
-| Página de perfil do usuário                          | ⏳ Pendente     |
+| Funcionalidade                                            | Status      |
+| --------------------------------------------------------- | ----------- |
+| Scaffold Next.js 16 + TypeScript strict + Tailwind 4      | ✅ Feito    |
+| NextAuth v5 — Google + GitHub OAuth                       | ✅ Feito    |
+| Prisma 7 + PostgreSQL (Neon) com adapter Neon             | ✅ Feito    |
+| Schema: User, Account, Session, Match, Prediction         | ✅ Feito    |
+| Seed: 48 jogos da Copa 2026                               | ✅ Feito    |
+| Motor de pontuação (`lib/scoring.ts`)                     | ✅ Feito    |
+| Sistema de ranks: Torcedor → Reserva → Titular → Lenda    | ✅ Feito    |
+| `GET /api/jogos` — lista 48 jogos                         | ✅ Feito    |
+| `POST /api/palpites` — salva com lock 5 min antes kickoff | ✅ Feito    |
+| `GET /api/palpites` — histórico do usuário                | ✅ Feito    |
+| Rate limiting via banco (10 req/min por usuário)          | ✅ Feito    |
+| Integração football-data.org (rate limit + timeout)       | ✅ Feito    |
+| Cron job GitHub Actions (a cada 15 min)                   | ✅ Feito    |
+| Security headers + admin guard por role ADMIN             | ✅ Feito    |
+| CI GitHub Actions (lint + typecheck em PRs)               | ✅ Feito    |
+| Deploy Vercel (https://brasa-pi.vercel.app)               | ✅ Feito    |
+| Página `/` — home com título BRASA + stats strip          | ✅ Feito    |
+| Página `/login` — Google + GitHub com separador           | ✅ Feito    |
+| Página `/jogos` — 48 jogos com formulário de palpite      | ✅ Feito    |
+| Página `/palpites` — histórico agrupado com total de pts  | ✅ Feito    |
+| Página `/ranking` — leaderboard real com top 3 destacado  | ✅ Feito    |
+| Página `/perfil` — stats, rank, conquistas, progressão    | ✅ Feito    |
+| Header sticky com nav ativa + avatar + logout             | ✅ Feito    |
+| Animações Framer Motion em todas as páginas               | ✅ Feito    |
+| Loading skeletons (jogos, palpites, ranking, perfil)      | ✅ Feito    |
+| Painel admin para override de resultados                  | ⏳ Pendente |
+| `topScorerName` no Match (artilheiro via cron)            | ⏳ Pendente |
 
 ---
 
@@ -100,7 +100,7 @@ Sem taxas, sem premiação em dinheiro. Só a glória de chegar no topo do ranki
 | [TypeScript](https://www.typescriptlang.org)   | 5      | Strict mode — sem `any`, sem surpresa                     |
 | [Tailwind CSS](https://tailwindcss.com)        | 4      | Paleta customizada com tokens Brasil (verde/amarelo/azul) |
 | [shadcn/ui](https://ui.shadcn.com)             | latest | Componentes acessíveis, sem lock-in de biblioteca         |
-| [Framer Motion](https://www.framer.com/motion) | 12     | Animações na home                                         |
+| [Framer Motion](https://www.framer.com/motion) | 12     | Animações em todas as páginas                             |
 | [Lucide React](https://lucide.dev)             | latest | Ícones consistentes e tree-shakeable                      |
 
 ### Backend
@@ -175,9 +175,10 @@ brasa/
 │   │   ├── (auth)/             # Rotas públicas
 │   │   │   └── login/          # Página de login (Google + GitHub)
 │   │   ├── (main)/             # Rotas protegidas
-│   │   │   ├── jogos/          # Lista 48 jogos agrupados por fase/grupo
-│   │   │   ├── palpites/       # Histórico de palpites do usuário
-│   │   │   └── ranking/        # Ranking geral (skeleton)
+│   │   │   ├── jogos/          # 48 jogos com formulário de palpite inline
+│   │   │   ├── palpites/       # Histórico de palpites agrupado por status
+│   │   │   ├── ranking/        # Leaderboard com top 3 e rank badges
+│   │   │   └── perfil/         # Stats pessoais, rank, conquistas, progressão
 │   │   ├── admin/              # Painel admin (guard por role ADMIN)
 │   │   │   ├── jogos/          # Gestão de jogos
 │   │   │   └── resultados/     # Override manual de resultados
@@ -194,9 +195,11 @@ brasa/
 │   │   ├── ranking/            # Tabela de ranking
 │   │   └── ui/                 # shadcn/ui (gerado)
 │   ├── lib/
-│   │   ├── auth.ts             # Configuração NextAuth
+│   │   ├── auth.ts             # Configuração NextAuth + session callbacks
+│   │   ├── auth.config.ts      # Config edge-safe para middleware
 │   │   ├── db.ts               # Prisma Client singleton (Neon adapter)
-│   │   ├── football-api.ts     # Client football-data.org
+│   │   ├── football-api.ts     # Client football-data.org (rate limit + timeout)
+│   │   ├── gamification.ts     # Sistema de ranks e progressão
 │   │   ├── scoring.ts          # Motor de pontuação (função pura)
 │   │   └── utils.ts            # cn() e helpers
 │   ├── hooks/                  # React hooks customizados
@@ -341,13 +344,13 @@ ci:       CI/CD
 
 Veja as [milestones](https://github.com/mauricioandrade/brasa/milestones) e as [issues abertas](https://github.com/mauricioandrade/brasa/issues) para saber o que está em andamento.
 
-| Milestone                                              | Status          |
-| ------------------------------------------------------ | --------------- |
-| v0.1 — Base (scaffold, auth, banco, deploy)            | ✅ Concluído    |
-| v0.2 — Palpites (jogos, formulário, kickoff lock)      | 🚧 Em andamento |
-| v0.3 — Pontuação (motor de pontos, cron de resultados) | 🚧 Em andamento |
-| v0.4 — Ranking (ranking geral, perfil)                 | ⏳ Pendente     |
-| v1.0 — Copa ao vivo (ao vivo, mata-mata, performance)  | ⏳ Pendente     |
+| Milestone                                              | Status       |
+| ------------------------------------------------------ | ------------ |
+| v0.1 — Base (scaffold, auth, banco, deploy)            | ✅ Concluído |
+| v0.2 — Palpites (jogos, formulário, kickoff lock)      | ✅ Concluído |
+| v0.3 — Pontuação (motor de pontos, cron de resultados) | ✅ Concluído |
+| v0.4 — Ranking (ranking geral, perfil, gamificação)    | ✅ Concluído |
+| v1.0 — Copa ao vivo (ao vivo, mata-mata, performance)  | ⏳ Pendente  |
 
 ---
 
