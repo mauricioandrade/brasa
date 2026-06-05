@@ -1,0 +1,16 @@
+name: Sync Resultados
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # a cada 15 min (mínimo confiável no GitHub Actions)
+  workflow_dispatch:          # permite rodar manualmente
+
+jobs:
+  sync:
+    name: Buscar resultados
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar endpoint de resultados
+        run: |
+          curl -sf -X GET "${{ secrets.APP_URL }}/api/cron/resultados" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

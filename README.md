@@ -11,13 +11,13 @@
 
 **O bolão mais quente da Copa do Mundo 2026**
 
-[![CI](https://github.com/seu-user/brasa/actions/workflows/ci.yml/badge.svg)](https://github.com/seu-user/brasa/actions)
+[![CI](https://github.com/mauricioandrade/brasa/actions/workflows/ci.yml/badge.svg)](https://github.com/mauricioandrade/brasa/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-[Demo](https://brasa.vercel.app) · [Abrir issue](https://github.com/seu-user/brasa/issues) · [Contribuir](./CONTRIBUTING.md)
+[Demo](https://brasa.vercel.app) · [Abrir issue](https://github.com/mauricioandrade/brasa/issues) · [Contribuir](./CONTRIBUTING.md)
 
 </div>
 
@@ -51,9 +51,9 @@ Sem taxas, sem premiação em dinheiro. Só a glória de chegar no topo do ranki
 
 | Tecnologia                                   | Versão | Por quê                                                   |
 | -------------------------------------------- | ------ | --------------------------------------------------------- |
-| [Next.js](https://nextjs.org)                | 15     | App Router, RSC, Server Actions, deploy trivial na Vercel |
+| [Next.js](https://nextjs.org)                | 16     | App Router, RSC, Server Actions, deploy trivial na Vercel |
 | [TypeScript](https://www.typescriptlang.org) | 5      | Strict mode — sem `any`, sem surpresa                     |
-| [Tailwind CSS](https://tailwindcss.com)      | 3      | Paleta customizada com tokens Brasil (verde/amarelo/azul) |
+| [Tailwind CSS](https://tailwindcss.com)      | 4      | Paleta customizada com tokens Brasil (verde/amarelo/azul) |
 | [shadcn/ui](https://ui.shadcn.com)           | latest | Componentes acessíveis, sem lock-in de biblioteca         |
 | [Lucide React](https://lucide.dev)           | latest | Ícones consistentes e tree-shakeable                      |
 
@@ -61,9 +61,22 @@ Sem taxas, sem premiação em dinheiro. Só a glória de chegar no topo do ranki
 
 | Tecnologia                                                                                         | Versão | Por quê                                                             |
 | -------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------- |
-| [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) | 15     | Fullstack no mesmo projeto, zero overhead                           |
-| [Prisma](https://www.prisma.io)                                                                    | 5      | ORM com migrations, type-safe queries, schema como fonte de verdade |
+| [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) | 16     | Fullstack no mesmo projeto, zero overhead                           |
+| [Prisma](https://www.prisma.io)                                                                    | 7      | ORM com migrations, type-safe queries, schema como fonte de verdade |
 | [NextAuth v5](https://authjs.dev)                                                                  | beta   | Login social (Google + GitHub) sem precisar gerenciar senha         |
+
+### Resultados automáticos
+
+Os placares são **sincronizados automaticamente** via [football-data.org](https://www.football-data.org) (free tier). Um cron job roda a cada 5 minutos durante a Copa e, quando um jogo termina, busca o placar final, atualiza o `Match` no banco e dispara o cálculo de pontos para todos os palpites daquele jogo.
+
+| Componente                 | Função                                                              |
+| -------------------------- | ------------------------------------------------------------------- |
+| `GET /api/cron/resultados` | Route handler protegida por `CRON_SECRET`, chamada pelo Vercel Cron |
+| `lib/football-api.ts`      | Client da football-data.org com cache e tratamento de erros         |
+| `lib/scoring.ts`           | Motor de pontuação — função pura chamada pelo cron                  |
+| Painel admin               | Fallback para correções manuais quando necessário                   |
+
+> Variável necessária: `FOOTBALL_DATA_API_KEY` (gratuita em [football-data.org](https://www.football-data.org/client/register))
 
 ### Banco de dados
 
@@ -84,10 +97,10 @@ Sem taxas, sem premiação em dinheiro. Só a glória de chegar no topo do ranki
 
 ### Deploy
 
-| Serviço                      | Uso                                     |
-| ---------------------------- | --------------------------------------- |
-| [Vercel](https://vercel.com) | Deploy automático a cada push na `main` |
-| [Neon](https://neon.tech)    | Banco em produção, região São Paulo     |
+| Serviço                      | Uso                                                        |
+| ---------------------------- | ---------------------------------------------------------- |
+| [Vercel](https://vercel.com) | Deploy automático a cada push na `main` + Vercel Cron Jobs |
+| [Neon](https://neon.tech)    | Banco em produção, região São Paulo                        |
 
 ---
 
@@ -99,8 +112,13 @@ brasa/
 │   ├── app/                  # Next.js App Router
 │   │   ├── (auth)/           # Grupo de rotas públicas (login)
 │   │   ├── (main)/           # Rotas protegidas (jogos, ranking, palpites)
-│   │   ├── admin/            # Painel admin — inserir resultados
-│   │   └── api/              # Route Handlers (REST)
+│   │   ├── admin/            # Painel admin — correções manuais de placar
+│   │   └── api/
+│   │       ├── auth/         # NextAuth handlers
+│   │       ├── jogos/        # CRUD de jogos
+│   │       ├── palpites/     # Salvar/consultar palpites
+│   │       └── cron/
+│   │           └── resultados/ # Cron job — busca placares e calcula pontos
 │   ├── components/
 │   │   ├── brasa/            # Logo e identidade visual
 │   │   ├── jogos/            # Cards e lista de jogos
@@ -110,6 +128,7 @@ brasa/
 │   ├── lib/
 │   │   ├── auth.ts           # Configuração NextAuth
 │   │   ├── db.ts             # Prisma Client singleton
+│   │   ├── football-api.ts   # Client football-data.org
 │   │   ├── scoring.ts        # Motor de pontuação (função pura)
 │   │   └── utils.ts          # cn() e helpers
 │   ├── hooks/                # React hooks customizados
@@ -128,8 +147,19 @@ User ──< Prediction >── Match
 ```
 
 - **User** — conta criada via login social
-- **Match** — os 48 jogos da Copa, com fase, grupos e horários
+- **Match** — os 48 jogos da Copa, atualizado automaticamente pelo cron
 - **Prediction** — palpite de um usuário para um jogo (placar + artilheiro)
+
+### Fluxo de resultados
+
+```
+Vercel Cron (a cada 5min)
+  → GET /api/cron/resultados
+    → football-data.org API
+      → Match FINISHED? → atualiza placar no banco
+        → calcula pontos de cada Prediction
+          → revalidateTag('ranking')
+```
 
 ---
 
@@ -140,12 +170,13 @@ User ──< Prediction >── Match
 - Node.js 20+
 - pnpm 9+
 - Conta no [Neon](https://neon.tech) (free tier) ou PostgreSQL local
+- API key gratuita em [football-data.org](https://www.football-data.org/client/register)
 
 ### Instalação
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-user/brasa.git
+git clone https://github.com/mauricioandrade/brasa.git
 cd brasa
 
 # 2. Instale as dependências
@@ -160,9 +191,13 @@ Preencha o `.env.local`:
 ```env
 DATABASE_URL="postgresql://..."
 DIRECT_URL="postgresql://..."
-AUTH_SECRET="..."          # openssl rand -base64 32
+AUTH_SECRET="..."               # openssl rand -base64 32
 AUTH_GOOGLE_ID="..."
 AUTH_GOOGLE_SECRET="..."
+AUTH_GITHUB_ID="..."
+AUTH_GITHUB_SECRET="..."
+FOOTBALL_DATA_API_KEY="..."     # football-data.org
+CRON_SECRET="..."               # openssl rand -base64 32
 ```
 
 ```bash
@@ -228,15 +263,15 @@ ci:       CI/CD
 
 ### Roadmap
 
-Veja as [milestones](https://github.com/seu-user/brasa/milestones) e as [issues abertas](https://github.com/seu-user/brasa/issues) para saber o que está em andamento.
+Veja as [milestones](https://github.com/mauricioandrade/brasa/milestones) e as [issues abertas](https://github.com/mauricioandrade/brasa/issues) para saber o que está em andamento.
 
-| Milestone                                             | Status          |
-| ----------------------------------------------------- | --------------- |
-| v0.1 — Base (scaffold, auth, banco, deploy)           | 🚧 Em andamento |
-| v0.2 — Palpites (jogos, formulário, kickoff lock)     | ⏳ Pendente     |
-| v0.3 — Pontuação (motor de pontos, admin)             | ⏳ Pendente     |
-| v0.4 — Ranking (ranking geral, perfil)                | ⏳ Pendente     |
-| v1.0 — Copa ao vivo (ao vivo, mata-mata, performance) | ⏳ Pendente     |
+| Milestone                                              | Status          |
+| ------------------------------------------------------ | --------------- |
+| v0.1 — Base (scaffold, auth, banco, deploy)            | 🚧 Em andamento |
+| v0.2 — Palpites (jogos, formulário, kickoff lock)      | ⏳ Pendente     |
+| v0.3 — Pontuação (motor de pontos, cron de resultados) | ⏳ Pendente     |
+| v0.4 — Ranking (ranking geral, perfil)                 | ⏳ Pendente     |
+| v1.0 — Copa ao vivo (ao vivo, mata-mata, performance)  | ⏳ Pendente     |
 
 ---
 
