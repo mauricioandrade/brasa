@@ -42,6 +42,14 @@ export async function Header() {
                 {session.user.name?.split(' ')[0]}
               </span>
             </div>
+            {session.user.role === 'ADMIN' && (
+              <Link
+                href="/admin/jogos"
+                className="text-xs text-amarelo-400/60 hover:text-amarelo-400 transition-colors"
+              >
+                Admin
+              </Link>
+            )}
             <form
               action={async () => {
                 'use server'

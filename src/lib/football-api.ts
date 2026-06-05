@@ -25,6 +25,7 @@ export type FDMatch = {
     fullTime: FDScore
     halfTime: FDScore
   }
+  topScorer?: string | null
 }
 
 async function fetchFD<T>(path: string): Promise<T> {

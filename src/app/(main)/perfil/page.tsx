@@ -28,14 +28,11 @@ export default async function PerfilPage() {
     return p.homeScore === p.match.homeScore && p.awayScore === p.match.awayScore
   }).length
   const correctWinners = finished.filter((p) => p.pointsEarned > 0).length
-  // topScorerName is on Prediction only; match doesn't expose it yet
   const scorerHits = finished.filter((p) => {
-    const matchAny = p.match as Record<string, unknown>
     return (
       p.topScorerName &&
-      typeof matchAny['topScorerName'] === 'string' &&
-      matchAny['topScorerName'] &&
-      p.topScorerName.toLowerCase() === (matchAny['topScorerName'] as string).toLowerCase()
+      p.match.topScorerName &&
+      p.topScorerName.toLowerCase() === p.match.topScorerName.toLowerCase()
     )
   }).length
   const accuracy = finished.length > 0 ? Math.round((correctWinners / finished.length) * 100) : 0

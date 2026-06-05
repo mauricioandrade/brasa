@@ -72,7 +72,12 @@ export async function GET(request: Request) {
       // Atualizar placar
       await db.match.update({
         where: { id: match.id },
-        data: { homeScore: home, awayScore: away, status: 'FINISHED' },
+        data: {
+          homeScore: home,
+          awayScore: away,
+          status: 'FINISHED',
+          ...(fdMatch.topScorer ? { topScorerName: fdMatch.topScorer } : {}),
+        },
       })
 
       // Calcular pontos de cada palpite em paralelo.
@@ -82,7 +87,12 @@ export async function GET(request: Request) {
           .map((p) => {
             const points = calculatePoints(
               { homeScore: p.homeScore, awayScore: p.awayScore, topScorerName: p.topScorerName },
-              { homeScore: home, awayScore: away, phase: match.phase as Phase },
+              {
+                homeScore: home,
+                awayScore: away,
+                topScorerName: fdMatch.topScorer ?? match.topScorerName,
+                phase: match.phase as Phase,
+              },
             )
             return db.prediction.update({
               where: { id: p.id },
