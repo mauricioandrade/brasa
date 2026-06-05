@@ -61,7 +61,7 @@ const FLAG_MAP: Record<string, string> = {
 
 export async function GET() {
   const players: PlayerDisplay[] = Object.entries(TEAM_STARS)
-    .slice(0, 16)
+    .slice(0, 32)
     .map(([nationality, star], i) => ({
       id: i + 1,
       name: star.name,
