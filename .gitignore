@@ -3,6 +3,11 @@
 # Windows zone identifiers
 *.Zone.Identifier
 
+# Screenshots
+*.png
+*.jpg
+*.jpeg
+
 # dependencies
 /node_modules
 /.pnp
