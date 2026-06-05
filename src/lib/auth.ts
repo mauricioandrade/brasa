@@ -28,9 +28,16 @@ export const {
   ],
   callbacks: {
     ...authConfig.callbacks,
-    session({ session, user }) {
-      session.user.id = user.id
-      session.user.role = (user as { role: 'USER' | 'ADMIN' }).role ?? 'USER'
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        token.role = (user as { role: 'USER' | 'ADMIN' }).role ?? 'USER'
+      }
+      return token
+    },
+    session({ session, token }) {
+      session.user.id = token.id as string
+      session.user.role = (token.role as 'USER' | 'ADMIN') ?? 'USER'
       return session
     },
   },
