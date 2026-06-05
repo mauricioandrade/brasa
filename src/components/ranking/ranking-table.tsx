@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 
 import { getRank } from '@/lib/gamification'
+import { RankMedal } from '@/components/brasa/rank-medal'
 
 type RankingEntry = {
   position: number
@@ -19,7 +20,6 @@ interface RankingTableProps {
   currentUserId?: string | null
 }
 
-const positionEmojis = ['🥇', '🥈', '🥉']
 
 function getPositionStyle(position: number) {
   if (position === 1)
@@ -72,11 +72,19 @@ export function RankingTable({ ranking, currentUserId }: RankingTableProps) {
             >
               {/* Position */}
               <span
-                className={`font-display shrink-0 text-center ${
-                  isTop3 ? (isFirst ? 'text-3xl w-8' : 'text-2xl w-8') : 'text-lg text-white/30 w-8'
+                className={`shrink-0 flex items-center justify-center ${
+                  isTop3 ? (isFirst ? 'w-9' : 'w-8') : 'text-lg text-white/30 w-8 font-display text-center'
                 }`}
               >
-                {positionEmojis[entry.position - 1] ?? entry.position}
+                {entry.position === 1 ? (
+                  <RankMedal variant="gold" size="sm" />
+                ) : entry.position === 2 ? (
+                  <RankMedal variant="silver" size="sm" />
+                ) : entry.position === 3 ? (
+                  <RankMedal variant="bronze" size="sm" />
+                ) : (
+                  entry.position
+                )}
               </span>
 
               {/* Avatar */}
