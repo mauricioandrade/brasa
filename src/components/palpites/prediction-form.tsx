@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { AnimatePresence, motion } from 'framer-motion'
+import Image from 'next/image'
 
 import { usePredictions } from '@/hooks/use-predictions'
-import { TEAM_STARS } from '@/lib/team-data'
+import { TEAM_COLORS, TEAM_STARS } from '@/lib/team-data'
 
 interface PredictionFormProps {
   matchId: string
@@ -15,6 +16,129 @@ interface PredictionFormProps {
   awayFlag: string
   existingPrediction?: { homeScore: number; awayScore: number; topScorerName: string | null }
   onSuccess?: () => void
+}
+
+interface ScorerOption {
+  name: string
+  flag: string
+  team: string
+  position: string
+}
+
+const POSITION_PT: Record<string, string> = { ATK: 'ATA', MID: 'MEI', GK: 'GOL', DEF: 'DEF' }
+
+function PlayerPhotoCard({
+  player,
+  isSelected,
+  onClick,
+}: {
+  player: ScorerOption
+  isSelected: boolean
+  onClick: () => void
+}) {
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
+  const color = TEAM_COLORS[player.team] ?? '#1a1a2e'
+  const surname = player.name.split(' ').pop()?.toUpperCase() ?? player.name.toUpperCase()
+  const positionPt = POSITION_PT[player.position] ?? player.position
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch(`/api/players/photo?name=${encodeURIComponent(player.name)}`, {
+      signal: controller.signal,
+    })
+      .then((r) => r.json())
+      .then((d: { photoUrl: string | null }) => setPhotoUrl(d.photoUrl))
+      .catch((err) => {
+        if (err instanceof Error && err.name !== 'AbortError') console.error(err)
+      })
+    return () => controller.abort()
+  }, [player.name])
+
+  const initials = player.name
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileTap={{ scale: 0.93 }}
+      className={`relative rounded-xl border text-center transition-all duration-150 overflow-hidden flex flex-col ${
+        isSelected
+          ? 'border-verde-500/60 bg-verde-500/10'
+          : 'border-white/8 bg-white/3 hover:border-white/15 hover:bg-white/5'
+      }`}
+      style={
+        isSelected
+          ? { boxShadow: '0 0 12px rgba(0,156,59,0.25), 0 0 0 1px rgba(0,156,59,0.3)' }
+          : undefined
+      }
+    >
+      {/* Selected overlay glow */}
+      {isSelected && (
+        <div
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{
+            background:
+              'radial-gradient(ellipse at 50% 0%, rgba(0,156,59,0.30) 0%, transparent 70%)',
+          }}
+        />
+      )}
+
+      {/* Header faixa colorida com flag */}
+      <div
+        className="flex items-center justify-center gap-1 py-1 px-1 shrink-0"
+        style={{ backgroundColor: color }}
+      >
+        <span className="text-sm leading-none">{player.flag}</span>
+        <span className="text-white/90 font-bold tracking-widest" style={{ fontSize: '6px' }}>
+          {player.team.toUpperCase().slice(0, 3)}
+        </span>
+      </div>
+
+      {/* Foto area */}
+      <div
+        className="relative overflow-hidden w-full"
+        style={{
+          height: '80px',
+          background: `linear-gradient(180deg, ${color}55 0%, ${color}18 50%, #001a0a 100%)`,
+        }}
+      >
+        {photoUrl ? (
+          <Image src={photoUrl} alt={player.name} fill className="object-cover object-top" unoptimized />
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center font-display text-white/80 text-lg font-bold"
+            style={{
+              background: `radial-gradient(circle at 50% 40%, ${color}80 0%, ${color}30 50%, transparent 75%)`,
+            }}
+          >
+            {initials}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div
+        className="px-1.5 py-1.5 flex-1 flex flex-col justify-center"
+        style={{ background: `linear-gradient(135deg, ${color}15 0%, #030f04 100%)` }}
+      >
+        <p className="text-white font-bold truncate leading-none text-[10px]">{surname}</p>
+        <p className="text-white/40 leading-none mt-0.5 text-[8px]">{positionPt}</p>
+      </div>
+
+      {/* Selected dot indicator */}
+      {isSelected && (
+        <div
+          className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-verde-500 z-20"
+          style={{ boxShadow: '0 0 4px rgba(0,156,59,0.9)' }}
+        />
+      )}
+    </motion.button>
+  )
 }
 
 function ScoreButton({
@@ -63,7 +187,7 @@ export function PredictionForm({
   const homeStar = TEAM_STARS[homeTeam]
   const awayStar = TEAM_STARS[awayTeam]
 
-  const scorerOptions = [
+  const scorerOptions: ScorerOption[] = [
     homeStar
       ? { name: homeStar.name, flag: homeFlag, team: homeTeam, position: homeStar.position }
       : null,
@@ -143,7 +267,7 @@ export function PredictionForm({
         </div>
       </div>
 
-      {/* Artilheiro — cards clicáveis */}
+      {/* Artilheiro — cards com foto */}
       {scorerOptions.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -158,60 +282,39 @@ export function PredictionForm({
           <div
             className={`grid gap-2 ${scorerOptions.length === 2 ? 'grid-cols-3' : 'grid-cols-2'}`}
           >
-            {scorerOptions.map((player) => {
-              const isSelected = topScorer === player.name
-              const surname = player.name.split(' ').pop()?.toUpperCase() ?? player.name
-              return (
-                <motion.button
-                  key={player.name}
-                  type="button"
-                  onClick={() => selectScorer(player.name)}
-                  whileTap={{ scale: 0.93 }}
-                  className={`relative rounded-xl border p-2.5 text-center transition-all duration-150 overflow-hidden ${
-                    isSelected
-                      ? 'border-verde-500/50 bg-verde-500/12'
-                      : 'border-white/8 bg-white/3 hover:border-white/15 hover:bg-white/5'
-                  }`}
-                >
-                  {isSelected && (
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background:
-                          'radial-gradient(ellipse at 50% 0%, rgba(0,156,59,0.35) 0%, transparent 65%)',
-                      }}
-                    />
-                  )}
-                  <div className="relative flex flex-col items-center gap-0.5">
-                    <span className="text-xl leading-none">{player.flag}</span>
-                    <p className="text-[11px] font-bold text-white mt-1 leading-none">{surname}</p>
-                    <p className="text-[9px] text-white/35 mt-0.5">{player.position}</p>
-                  </div>
-                  {isSelected && (
-                    <div
-                      className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-verde-500"
-                      style={{ boxShadow: '0 0 4px rgba(0,156,59,0.9)' }}
-                    />
-                  )}
-                </motion.button>
-              )
-            })}
+            {scorerOptions.map((player) => (
+              <PlayerPhotoCard
+                key={player.name}
+                player={player}
+                isSelected={topScorer === player.name}
+                onClick={() => selectScorer(player.name)}
+              />
+            ))}
 
             {/* Pular */}
             <motion.button
               type="button"
               onClick={skipScorer}
               whileTap={{ scale: 0.93 }}
-              className={`rounded-xl border p-2.5 text-center transition-all duration-150 ${
+              className={`rounded-xl border text-center transition-all duration-150 flex flex-col overflow-hidden ${
                 hasMadeScorerChoice && !topScorer
                   ? 'border-white/20 bg-white/8'
                   : 'border-white/5 bg-transparent hover:border-white/10 hover:bg-white/3'
               }`}
             >
-              <div className="flex flex-col items-center gap-0.5">
-                <span className="text-xl text-white/15 leading-none">—</span>
-                <p className="text-[11px] font-medium text-white/35 mt-1 leading-none">Pular</p>
-                <p className="text-[9px] text-white/20 mt-0.5">sem bônus</p>
+              {/* Fake header spacer to align heights */}
+              <div className="py-1 px-1 shrink-0 bg-white/5" style={{ height: '26px' }} />
+              {/* Fake photo area spacer */}
+              <div
+                className="w-full flex items-center justify-center"
+                style={{ height: '80px' }}
+              >
+                <span className="text-2xl text-white/10 leading-none select-none">—</span>
+              </div>
+              {/* Footer */}
+              <div className="px-1.5 py-1.5 flex-1 flex flex-col justify-center bg-white/3">
+                <p className="text-[10px] font-medium text-white/35 leading-none">Pular</p>
+                <p className="text-[8px] text-white/20 mt-0.5">sem bônus</p>
               </div>
             </motion.button>
           </div>
