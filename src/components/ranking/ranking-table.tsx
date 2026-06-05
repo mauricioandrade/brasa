@@ -16,6 +16,7 @@ type RankingEntry = {
 
 interface RankingTableProps {
   ranking: RankingEntry[]
+  currentUserId?: string | null
 }
 
 const positionEmojis = ['🥇', '🥈', '🥉']
@@ -48,13 +49,14 @@ function getPositionStyle(position: number) {
   }
 }
 
-export function RankingTable({ ranking }: RankingTableProps) {
+export function RankingTable({ ranking, currentUserId }: RankingTableProps) {
   return (
     <div className="flex flex-col gap-2">
       {ranking.map((entry, idx) => {
         const rank = getRank(entry.points)
         const isFirst = entry.position === 1
         const isTop3 = entry.position <= 3
+        const isMe = entry.userId === currentUserId
         const showSeparator = idx === 2 && ranking.length > 3
         const { borderClass, pointsClass, cardStyle } = getPositionStyle(entry.position)
 
@@ -65,8 +67,8 @@ export function RankingTable({ ranking }: RankingTableProps) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, ease: 'easeOut', delay: idx * 0.04 }}
               whileHover={{ x: 4, transition: { duration: 0.15 } }}
-              className={`flex items-center gap-4 bg-brasa-surface rounded-2xl px-4 border transition-colors duration-150 ${borderClass} ${isFirst ? 'py-4' : 'py-3'}`}
-              style={cardStyle}
+              className={`flex items-center gap-4 rounded-2xl px-4 border transition-colors duration-150 ${isMe ? 'bg-verde-500/8 border-verde-500/30' : `bg-brasa-surface ${borderClass}`} ${isFirst ? 'py-4' : 'py-3'}`}
+              style={isMe ? {} : cardStyle}
             >
               {/* Position */}
               <span
@@ -96,13 +98,20 @@ export function RankingTable({ ranking }: RankingTableProps) {
 
               {/* Name + rank */}
               <div className="flex-1 min-w-0">
-                <p
-                  className={`font-semibold truncate ${
-                    isFirst ? 'font-display text-xl text-white' : 'text-white'
-                  }`}
-                >
-                  {entry.name}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p
+                    className={`font-semibold truncate ${
+                      isFirst ? 'font-display text-xl text-white' : 'text-white'
+                    }`}
+                  >
+                    {entry.name}
+                  </p>
+                  {isMe && (
+                    <span className="text-[9px] font-bold tracking-wider text-verde-400 bg-verde-500/15 border border-verde-500/25 px-1.5 py-0.5 rounded-full shrink-0">
+                      Você
+                    </span>
+                  )}
+                </div>
                 <span
                   className={`text-xs font-semibold ${rank.color} bg-white/5 rounded-full px-2 py-0.5`}
                 >

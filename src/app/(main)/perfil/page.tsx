@@ -5,7 +5,7 @@ import { Lock } from 'lucide-react'
 
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { getNextRank, getProgress, getRank } from '@/lib/gamification'
+import { computeStreak, getNextRank, getProgress, getRank } from '@/lib/gamification'
 
 import { ProgressBar } from './progress-bar'
 
@@ -37,6 +37,8 @@ export default async function PerfilPage() {
   }).length
   const accuracy = finished.length > 0 ? Math.round((correctWinners / finished.length) * 100) : 0
   const participation = totalMatches > 0 ? Math.round((predictions.length / totalMatches) * 100) : 0
+
+  const { current: streakCurrent, best: streakBest } = computeStreak(predictions)
 
   const rank = getRank(totalPoints)
   const nextRank = getNextRank(totalPoints)
@@ -72,6 +74,34 @@ export default async function PerfilPage() {
       title: 'Fiel',
       description: 'Palpitou em 50% ou mais dos jogos',
       unlocked: participation >= 50,
+    },
+    {
+      id: 'streak-3',
+      emoji: '🔥',
+      title: 'Em chamas',
+      description: '3 acertos consecutivos',
+      unlocked: streakBest >= 3,
+    },
+    {
+      id: 'streak-5',
+      emoji: '⚡',
+      title: 'Invencível',
+      description: '5 acertos consecutivos',
+      unlocked: streakBest >= 5,
+    },
+    {
+      id: 'prophete',
+      emoji: '🔮',
+      title: 'Profeta',
+      description: '10 palpites certos no total',
+      unlocked: correctWinners >= 10,
+    },
+    {
+      id: 'sharpshooter',
+      emoji: '🏅',
+      title: 'Sniper',
+      description: '3 placares exatos',
+      unlocked: exactScores >= 3,
     },
   ]
 
@@ -166,6 +196,33 @@ export default async function PerfilPage() {
           <p className="text-sm text-white/50 mt-1">palpites feitos</p>
         </div>
       </div>
+
+      {/* Section 2b — Streak */}
+      {streakBest > 0 && (
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div
+            className={`rounded-xl border p-4 ${
+              streakCurrent >= 3
+                ? 'border-orange-500/30 bg-orange-500/8'
+                : 'border-white/5 bg-brasa-surface'
+            }`}
+          >
+            <div className="flex items-baseline gap-1.5">
+              <p
+                className={`font-display text-4xl ${streakCurrent >= 3 ? 'text-orange-400' : 'text-white/80'}`}
+              >
+                {streakCurrent}
+              </p>
+              {streakCurrent >= 3 && <span className="text-xl">🔥</span>}
+            </div>
+            <p className="text-sm text-white/50 mt-1">sequência atual</p>
+          </div>
+          <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
+            <p className="font-display text-4xl text-white/80">{streakBest}</p>
+            <p className="text-sm text-white/50 mt-1">melhor sequência</p>
+          </div>
+        </div>
+      )}
 
       {/* Section 3 — Last 5 predictions */}
       {last5.length > 0 && (
