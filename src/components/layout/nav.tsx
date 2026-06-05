@@ -7,6 +7,7 @@ const links = [
   { href: '/jogos', label: 'Jogos' },
   { href: '/palpites', label: 'Palpites' },
   { href: '/ranking', label: 'Ranking' },
+  { href: '/perfil', label: 'Perfil' },
 ]
 
 export function Nav() {
@@ -20,11 +21,14 @@ export function Nav() {
           <Link
             key={l.href}
             href={l.href}
-            className={`text-sm px-2 py-1 rounded transition-colors ${
-              active ? 'text-white font-semibold' : 'text-white/50 hover:text-white/80'
+            className={`relative text-sm px-2 py-1 flex flex-col items-center gap-0.5 transition-colors ${
+              active ? 'text-white' : 'text-white/50 hover:text-white/80'
             }`}
           >
-            {l.label}
+            <span>{l.label}</span>
+            {active && (
+              <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full bg-verde-500" />
+            )}
           </Link>
         )
       })}

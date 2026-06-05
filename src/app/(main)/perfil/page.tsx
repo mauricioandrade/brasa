@@ -1,0 +1,225 @@
+import Image from 'next/image'
+import { redirect } from 'next/navigation'
+
+import { Lock } from 'lucide-react'
+
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { getNextRank, getProgress, getRank } from '@/lib/gamification'
+
+import { ProgressBar } from './progress-bar'
+
+export default async function PerfilPage() {
+  const session = await auth()
+  if (!session?.user?.id) redirect('/login')
+
+  const [predictions, totalMatches] = await Promise.all([
+    db.prediction.findMany({
+      where: { userId: session.user.id },
+      include: { match: true },
+      orderBy: { createdAt: 'desc' },
+    }),
+    db.match.count(),
+  ])
+
+  const finished = predictions.filter((p) => p.calculated)
+  const totalPoints = finished.reduce((sum, p) => sum + p.pointsEarned, 0)
+  const exactScores = finished.filter((p) => {
+    return p.homeScore === p.match.homeScore && p.awayScore === p.match.awayScore
+  }).length
+  const correctWinners = finished.filter((p) => p.pointsEarned > 0).length
+  // topScorerName is on Prediction only; match doesn't expose it yet
+  const scorerHits = finished.filter((p) => {
+    const matchAny = p.match as Record<string, unknown>
+    return (
+      p.topScorerName &&
+      typeof matchAny['topScorerName'] === 'string' &&
+      matchAny['topScorerName'] &&
+      p.topScorerName.toLowerCase() === (matchAny['topScorerName'] as string).toLowerCase()
+    )
+  }).length
+  const accuracy = finished.length > 0 ? Math.round((correctWinners / finished.length) * 100) : 0
+  const participation = totalMatches > 0 ? Math.round((predictions.length / totalMatches) * 100) : 0
+
+  const rank = getRank(totalPoints)
+  const nextRank = getNextRank(totalPoints)
+  const progress = getProgress(totalPoints)
+
+  const last5 = predictions.slice(0, 5)
+
+  const achievements = [
+    {
+      id: 'first-prediction',
+      emoji: '🎯',
+      title: 'Primeiro palpite',
+      description: 'Fez o primeiro palpite',
+      unlocked: predictions.length > 0,
+    },
+    {
+      id: 'exact-score',
+      emoji: '🎯',
+      title: 'Placar exato',
+      description: 'Acertou o placar exato de um jogo',
+      unlocked: exactScores > 0,
+    },
+    {
+      id: 'scorer',
+      emoji: '⚽',
+      title: 'Artilheiro',
+      description: 'Acertou o artilheiro de um jogo',
+      unlocked: scorerHits > 0,
+    },
+    {
+      id: 'faithful',
+      emoji: '🏆',
+      title: 'Fiel',
+      description: 'Palpitou em 50% ou mais dos jogos',
+      unlocked: participation >= 50,
+    },
+  ]
+
+  return (
+    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
+      {/* Section 1 — Identity */}
+      <div className="bg-brasa-surface rounded-xl border border-white/5 p-6 mb-4">
+        <div className="flex items-center gap-4">
+          {session.user.image ? (
+            <Image
+              src={session.user.image}
+              alt={session.user.name ?? 'Avatar'}
+              width={64}
+              height={64}
+              className="rounded-full shrink-0"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-verde-500/20 flex items-center justify-center shrink-0">
+              <span className="font-display text-2xl text-verde-500">
+                {(session.user.name ?? session.user.email ?? 'U')[0].toUpperCase()}
+              </span>
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="font-semibold text-white text-lg truncate">
+              {session.user.name ?? 'Usuário'}
+            </p>
+            <p className="text-sm text-white/50 truncate">{session.user.email}</p>
+          </div>
+        </div>
+
+        <div className="mt-5 pt-5 border-t border-white/5">
+          <div className="flex items-baseline gap-3 mb-3">
+            <span className="font-display text-5xl leading-none">{rank.emoji}</span>
+            <span className="font-display text-4xl text-amarelo-400 leading-none">{rank.name}</span>
+            <span className="text-white/40 text-sm">{totalPoints} pts</span>
+          </div>
+
+          {nextRank ? (
+            <div className="flex flex-col gap-1.5 mt-3">
+              <ProgressBar progress={progress} />
+              <span className="text-white/30 text-xs">
+                {nextRank.minPoints - totalPoints} pts para {nextRank.emoji} {nextRank.name}
+              </span>
+            </div>
+          ) : (
+            <p className="text-white/30 text-xs mt-1">Rank máximo atingido</p>
+          )}
+        </div>
+      </div>
+
+      {/* Section 2 — Stats */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
+          <p className="font-display text-4xl text-amarelo-400">{totalPoints}</p>
+          <p className="text-sm text-white/50 mt-1">pontos total</p>
+        </div>
+        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
+          <p className="font-display text-4xl text-amarelo-400">{accuracy}%</p>
+          <p className="text-sm text-white/50 mt-1">acertos</p>
+        </div>
+        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
+          <p className="font-display text-4xl text-amarelo-400">{exactScores}</p>
+          <p className="text-sm text-white/50 mt-1">placares exatos</p>
+        </div>
+        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
+          <p className="font-display text-4xl text-amarelo-400">{predictions.length}</p>
+          <p className="text-sm text-white/50 mt-1">palpites feitos</p>
+        </div>
+      </div>
+
+      {/* Section 3 — Last 5 predictions */}
+      {last5.length > 0 && (
+        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4 mb-4">
+          <h2 className="font-display text-2xl text-white mb-3">Últimos palpites</h2>
+          <div className="flex flex-col gap-2">
+            {last5.map((p) => {
+              const hasResult = p.match.homeScore !== null && p.match.awayScore !== null
+              return (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between py-2 border-b border-white/5 last:border-0"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm">{p.match.homeFlag}</span>
+                    <span className="text-white/70 text-sm truncate">{p.match.homeTeam}</span>
+                    <span className="text-white/30 text-xs font-mono">
+                      {p.homeScore}–{p.awayScore}
+                    </span>
+                    <span className="text-white/70 text-sm truncate">{p.match.awayTeam}</span>
+                    <span className="text-sm">{p.match.awayFlag}</span>
+                  </div>
+                  <div className="shrink-0 ml-3 text-right">
+                    {p.calculated ? (
+                      <>
+                        {hasResult && (
+                          <span className="text-white/30 text-xs font-mono block">
+                            {p.match.homeScore}–{p.match.awayScore}
+                          </span>
+                        )}
+                        <span
+                          className={`text-sm font-semibold ${
+                            p.pointsEarned > 0 ? 'text-verde-500' : 'text-white/30'
+                          }`}
+                        >
+                          {p.pointsEarned > 0 ? `+${p.pointsEarned} pts` : '0 pts'}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-white/30 text-xs">pendente</span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Section 4 — Achievements */}
+      <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
+        <h2 className="font-display text-2xl text-white mb-3">Conquistas</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {achievements.map((a) => (
+            <div
+              key={a.id}
+              className={`rounded-lg border p-3 flex items-start gap-3 ${
+                a.unlocked ? 'border-verde-500/30 bg-verde-500/5' : 'border-white/5 opacity-50'
+              }`}
+            >
+              <span className={`text-2xl ${a.unlocked ? '' : 'grayscale'}`}>
+                {a.unlocked ? a.emoji : <Lock size={24} className="text-white/30" />}
+              </span>
+              <div>
+                <p
+                  className={`text-sm font-semibold ${a.unlocked ? 'text-white' : 'text-white/40'}`}
+                >
+                  {a.title}
+                </p>
+                <p className="text-xs text-white/30 mt-0.5">{a.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  )
+}
