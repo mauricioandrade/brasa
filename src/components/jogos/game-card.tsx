@@ -6,7 +6,9 @@ import type { Match } from '@prisma/client'
 import { motion } from 'framer-motion'
 import { Pencil } from 'lucide-react'
 
+import { PlayerFigurina } from '@/components/brasa/player-figurina'
 import { PredictionForm } from '@/components/palpites/prediction-form'
+import { TEAM_STARS } from '@/lib/team-data'
 
 interface GameCardProps {
   match: Match
@@ -114,6 +116,42 @@ export function GameCard({ match, userPrediction }: GameCardProps) {
           </span>
         </div>
       </div>
+
+      {/* Star players */}
+      {(() => {
+        const homeStar = TEAM_STARS[match.homeTeam]
+        const awayStar = TEAM_STARS[match.awayTeam]
+        if (!homeStar && !awayStar) return null
+        return (
+          <div className="flex items-center justify-between gap-2">
+            {homeStar ? (
+              <PlayerFigurina
+                name={homeStar.name}
+                team={match.homeTeam}
+                flag={match.homeFlag}
+                position={homeStar.position}
+                goals={0}
+                size="sm"
+              />
+            ) : (
+              <div className="w-16" />
+            )}
+            <span className="text-white/10 text-xs font-display">vs</span>
+            {awayStar ? (
+              <PlayerFigurina
+                name={awayStar.name}
+                team={match.awayTeam}
+                flag={match.awayFlag}
+                position={awayStar.position}
+                goals={0}
+                size="sm"
+              />
+            ) : (
+              <div className="w-16" />
+            )}
+          </div>
+        )
+      })()}
 
       {/* User prediction display (when game not predictable) */}
       {userPrediction && !canPredict && !open && (
