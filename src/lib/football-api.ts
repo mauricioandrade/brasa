@@ -66,7 +66,7 @@ async function fetchESPN(url: string): Promise<ESPNScoreboard> {
   try {
     const res = await fetch(url, {
       signal: controller.signal,
-      next: { revalidate: 0 },
+      next: { revalidate: 30 },
     })
 
     if (!res.ok) {

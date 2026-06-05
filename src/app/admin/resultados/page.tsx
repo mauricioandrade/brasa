@@ -2,12 +2,16 @@ import { revalidateTag } from 'next/cache'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { calculatePoints } from '@/lib/scoring'
 import type { Phase } from '@/types'
 
 async function updateMatchResult(formData: FormData) {
   'use server'
+
+  const session = await auth()
+  if (session?.user?.role !== 'ADMIN') throw new Error('Unauthorized')
 
   const matchId = formData.get('matchId') as string
   const homeScoreRaw = formData.get('homeScore') as string
