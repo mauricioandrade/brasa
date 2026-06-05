@@ -1,4 +1,7 @@
+'use client'
+
 import type { Match } from '@prisma/client'
+import { motion } from 'framer-motion'
 
 interface GameCardProps {
   match: Match
@@ -15,7 +18,11 @@ function StatusBadge({ status }: { status: Match['status'] }) {
   if (status === 'LIVE') {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-red-600/20 px-2 py-0.5 text-xs font-semibold text-red-400">
-        <span className="size-1.5 animate-pulse rounded-full bg-red-400" />
+        <motion.span
+          className="size-1.5 rounded-full bg-red-400"
+          animate={{ opacity: [1, 0.4, 1] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        />
         {STATUS_LABELS[status]}
       </span>
     )
@@ -63,7 +70,11 @@ export function GameCard({ match }: GameCardProps) {
   const hasScore = match.homeScore !== null && match.awayScore !== null
 
   return (
-    <div className="rounded-xl bg-brasa-surface border border-white/5 px-4 py-3 flex flex-col gap-2">
+    <motion.div
+      className="rounded-xl bg-brasa-surface border border-white/5 px-4 py-3 flex flex-col gap-2"
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.15 }}
+    >
       {/* Top row: date/time + status */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-white/40 capitalize">
@@ -99,6 +110,6 @@ export function GameCard({ match }: GameCardProps) {
           <span className="text-2xl leading-none">{match.awayFlag}</span>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
