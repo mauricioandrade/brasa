@@ -35,8 +35,36 @@ const stats = [
 
 export function HomeAnimated() {
   return (
-    <main className="min-h-screen bg-brasa-bg flex flex-col items-center justify-center px-6 text-white">
-      <div className="flex flex-col items-center gap-12 max-w-xl w-full text-center">
+    <main className="min-h-screen bg-brasa-bg flex flex-col items-center justify-center px-6 text-white relative overflow-hidden">
+      {/* ── Atmospheric background orbs ── */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        {/* Verde orb — top left */}
+        <motion.div
+          className="absolute -top-40 -left-20 w-[480px] h-[480px] rounded-full blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(0,156,59,0.28) 0%, transparent 70%)' }}
+          animate={{ scale: [1, 1.25, 1], opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        {/* Amarelo orb — bottom right */}
+        <motion.div
+          className="absolute -bottom-32 -right-16 w-96 h-96 rounded-full blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, rgba(255,223,0,0.18) 0%, transparent 70%)',
+          }}
+          animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.75, 0.4] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+        />
+        {/* Verde center pulse */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[350px] rounded-full blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(0,156,59,0.1) 0%, transparent 65%)' }}
+          animate={{ scale: [0.85, 1.15, 0.85] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+        />
+      </div>
+
+      {/* ── Content ── */}
+      <div className="flex flex-col items-center gap-12 max-w-xl w-full text-center relative z-10">
         {/* Logo — fadeIn + slideDown, delay 0 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -97,8 +125,22 @@ export function HomeAnimated() {
         </motion.div>
 
         {/* Footer note */}
-        <motion.p className="text-white/20 text-xs" {...fadeIn(0.85)}>
-          Copa do Mundo 2026 · 48 jogos · Open source · MIT
+        <motion.p
+          className="text-white/20 text-xs flex flex-col items-center gap-1"
+          {...fadeIn(0.85)}
+        >
+          <span>Copa do Mundo 2026 · 48 jogos · Open source · MIT</span>
+          <span>
+            Feito por{' '}
+            <a
+              href="https://github.com/mauricioandrade"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/35 hover:text-white/60 transition-colors underline underline-offset-2"
+            >
+              @mauricioandrade
+            </a>
+          </span>
         </motion.p>
       </div>
     </main>
