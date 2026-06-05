@@ -7,7 +7,7 @@ import { calculatePoints } from '@/lib/scoring'
 import type { Phase } from '@/types'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 30
+export const maxDuration = 60
 
 export async function GET(request: Request) {
   const auth = request.headers.get('authorization')
@@ -69,7 +69,13 @@ export async function GET(request: Request) {
         data: { homeScore: home, awayScore: away, status: 'FINISHED' },
       })
 
-      // Calcular pontos de cada palpite
+      // Calcular pontos de cada palpite.
+      // Usamos update individual por prediction porque cada palpite pode ter
+      // pontuação diferente (placar exato, vencedor, artilheiro). Um
+      // updateMany só seria viável se agrupássemos por pontos, o que exigiria
+      // calcular tudo primeiro e depois emitir um updateMany por grupo —
+      // complexidade maior sem ganho significativo para o volume esperado
+      // (~100 palpites por jogo no pior caso).
       for (const prediction of match.predictions) {
         if (prediction.calculated) continue
 
@@ -99,6 +105,7 @@ export async function GET(request: Request) {
       revalidateTag('ranking', {})
     }
 
+    console.warn(`[cron] ciclo completo: ${updatedScores} placares, ${updatedStatus} ao vivo`)
     return NextResponse.json({ updatedScores, updatedStatus })
   } catch (err) {
     console.error('[cron/resultados]', err)

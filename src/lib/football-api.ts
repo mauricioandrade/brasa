@@ -28,14 +28,37 @@ export type FDMatch = {
 }
 
 async function fetchFD<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'X-Auth-Token': process.env.FOOTBALL_DATA_API_KEY! },
-    next: { revalidate: 60 },
-  })
-  if (!res.ok) {
-    throw new Error(`football-data.org ${res.status}: ${path}`)
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 10_000)
+
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      signal: controller.signal,
+      headers: { 'X-Auth-Token': process.env.FOOTBALL_DATA_API_KEY! },
+      cache: 'force-cache',
+      next: { revalidate: 60 },
+    })
+
+    if (res.status === 429) {
+      console.warn('[football-api] rate limit atingido, aguardando próximo ciclo')
+      return { matches: [] } as T
+    }
+
+    if (!res.ok) {
+      throw new Error(`football-data.org ${res.status}: ${path}`)
+    }
+
+    return res.json() as Promise<T>
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      console.warn('[football-api] timeout de 10s atingido:', path)
+    } else {
+      console.error('[football-api] erro de rede:', path, err)
+    }
+    return { matches: [] } as T
+  } finally {
+    clearTimeout(timeout)
   }
-  return res.json() as Promise<T>
 }
 
 export async function getFinishedMatches(): Promise<FDMatch[]> {

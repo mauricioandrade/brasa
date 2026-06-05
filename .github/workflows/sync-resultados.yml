@@ -12,5 +12,5 @@ jobs:
     steps:
       - name: Chamar endpoint de resultados
         run: |
-          curl -sf -X GET "${{ secrets.APP_URL }}/api/cron/resultados" \
+          curl -sf --max-time 30 -X GET "${{ secrets.APP_URL }}/api/cron/resultados" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
