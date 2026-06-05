@@ -409,6 +409,10 @@ const matches = [
 ]
 
 async function main() {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Seed não deve rodar em produção')
+  }
+
   console.warn('Seeding matches...')
 
   await db.match.deleteMany()
