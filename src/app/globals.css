@@ -172,3 +172,12 @@ body {
     @apply font-sans;
   }
 }
+
+@keyframes scroll-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
