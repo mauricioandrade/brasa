@@ -25,7 +25,7 @@ function Initials({ name, color }: { name: string; color: string }) {
   return (
     <div
       className="w-full h-full flex items-center justify-center font-display text-white"
-      style={{ backgroundColor: color, fontSize: '1.25rem' }}
+      style={{ backgroundColor: color, fontSize: '1.5rem', fontWeight: 700 }}
     >
       {initials}
     </div>
@@ -50,6 +50,8 @@ export function PlayerFigurina({
       .catch(() => {})
   }, [name])
 
+  const POSITION_PT: Record<string, string> = { ATK: 'ATA', MID: 'MEI', GK: 'GOL', DEF: 'DEF' }
+  const positionPt = POSITION_PT[position] ?? position
   const isSmall = size === 'sm'
   const surname = name.split(' ').pop()?.toUpperCase() ?? name.toUpperCase()
 
@@ -57,7 +59,7 @@ export function PlayerFigurina({
     <div
       className={`
         ${isSmall ? 'w-16' : 'w-24'}
-        rounded-lg overflow-hidden flex flex-col border border-white/10 shrink-0
+        rounded-lg overflow-hidden flex flex-col border border-white/5 shrink-0
       `}
       style={{ boxShadow: `0 0 0 1.5px ${color}55` }}
     >
@@ -84,14 +86,14 @@ export function PlayerFigurina({
       </div>
 
       {/* Footer */}
-      <div className="bg-[#0d0d14] px-1.5 py-1">
+      <div className="bg-brasa-bg px-1.5 py-1">
         <p
           className={`text-white font-bold truncate leading-none ${isSmall ? 'text-[9px]' : 'text-[11px]'}`}
         >
           {surname}
         </p>
         <p className={`text-white/40 leading-none mt-0.5 ${isSmall ? 'text-[8px]' : 'text-[9px]'}`}>
-          {position} · ⚽{goals}
+          {goals > 0 ? `${positionPt} · ⚽ ${goals}` : positionPt}
         </p>
       </div>
     </div>
