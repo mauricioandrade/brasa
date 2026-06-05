@@ -11,13 +11,13 @@
 
 **O bolão mais quente da Copa do Mundo 2026**
 
-[![CI](https://github.com/mauricioandrade/brasa/actions/workflows/ci.yml/badge.svg)](https://github.com/mauricioandrade/brasa/actions)
+[![CI](https://github.com/mauricioandrade/brasa/actions/workflows/ci.yml/badge.svg)](https://github.com/mauricioandrade/brasa/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-[Demo](https://brasa.vercel.app) · [Abrir issue](https://github.com/mauricioandrade/brasa/issues) · [Contribuir](./CONTRIBUTING.md)
+[Demo](https://brasa-pi.vercel.app) · [Abrir issue](https://github.com/mauricioandrade/brasa/issues) · [Contribuir](./CONTRIBUTING.md)
 
 </div>
 
@@ -28,6 +28,40 @@
 O Brasa é um bolão open source da Copa do Mundo 2026 com mecânica de **fantasy points** — você não pontua só acertando o vencedor. Quanto mais ousado e preciso o palpite, mais pontos você acumula.
 
 Sem taxas, sem premiação em dinheiro. Só a glória de chegar no topo do ranking.
+
+---
+
+## Estado atual
+
+| Funcionalidade                                       | Status          |
+| ---------------------------------------------------- | --------------- |
+| Scaffold Next.js 16 + TypeScript strict + Tailwind 4 | ✅ Feito        |
+| NextAuth v5 — Google + GitHub OAuth                  | ✅ Feito        |
+| Prisma 7 + PostgreSQL (Neon) com adapter Neon        | ✅ Feito        |
+| Schema: User, Account, Session, Match, Prediction    | ✅ Feito        |
+| Seed: 48 jogos da Copa 2026                          | ✅ Feito        |
+| Motor de pontuação (`lib/scoring.ts`)                | ✅ Feito        |
+| Sistema de ranks (Torcedor → Lenda)                  | ✅ Feito        |
+| `GET /api/jogos` — lista 48 jogos                    | ✅ Feito        |
+| `POST /api/palpites` — salva com lock 5 min antes    | ✅ Feito        |
+| `GET /api/palpites` — histórico do usuário           | ✅ Feito        |
+| Rate limiting em `/api/palpites` (30 req/min)        | ✅ Feito        |
+| Integração football-data.org (rate limit + timeout)  | ✅ Feito        |
+| Cron job GitHub Actions (a cada 15 min)              | ✅ Feito        |
+| Security headers (X-Frame-Options, CSP…)             | ✅ Feito        |
+| CI GitHub Actions (lint + typecheck em PRs)          | ✅ Feito        |
+| Deploy Vercel (https://brasa-pi.vercel.app)          | ✅ Feito        |
+| Página `/` — home animada com Framer Motion          | ✅ Feito        |
+| Página `/login` — botões Google e GitHub             | ✅ Feito        |
+| Página `/jogos` — 48 jogos agrupados por fase/grupo  | ✅ Feito        |
+| Página `/palpites` — histórico do usuário logado     | ✅ Feito        |
+| Proteção de rotas via middleware (NextAuth)          | ✅ Feito        |
+| Admin guard por role ADMIN                           | ✅ Feito        |
+| Formulário de palpite na página de jogos             | 🚧 Em progresso |
+| Página `/ranking` — ranking geral                    | 🚧 Em progresso |
+| Painel admin para override de resultados             | ⏳ Pendente     |
+| Botão de sign out                                    | ⏳ Pendente     |
+| Página de perfil do usuário                          | ⏳ Pendente     |
 
 ---
 
@@ -43,40 +77,40 @@ Sem taxas, sem premiação em dinheiro. Só a glória de chegar no topo do ranki
 
 > Os palpites fecham automaticamente **5 minutos antes do kickoff**. Sem volta.
 
+### Sistema de ranks
+
+| Rank     | Descrição       |
+| -------- | --------------- |
+| Torcedor | Iniciante       |
+| Reserva  | Crescendo       |
+| Titular  | Jogador regular |
+| Craque   | Destaque        |
+| Fenômeno | Elite           |
+| Lenda    | Topo absoluto   |
+
 ---
 
 ## Stack
 
 ### Frontend
 
-| Tecnologia                                   | Versão | Por quê                                                   |
-| -------------------------------------------- | ------ | --------------------------------------------------------- |
-| [Next.js](https://nextjs.org)                | 16     | App Router, RSC, Server Actions, deploy trivial na Vercel |
-| [TypeScript](https://www.typescriptlang.org) | 5      | Strict mode — sem `any`, sem surpresa                     |
-| [Tailwind CSS](https://tailwindcss.com)      | 4      | Paleta customizada com tokens Brasil (verde/amarelo/azul) |
-| [shadcn/ui](https://ui.shadcn.com)           | latest | Componentes acessíveis, sem lock-in de biblioteca         |
-| [Lucide React](https://lucide.dev)           | latest | Ícones consistentes e tree-shakeable                      |
+| Tecnologia                                     | Versão | Por quê                                                   |
+| ---------------------------------------------- | ------ | --------------------------------------------------------- |
+| [Next.js](https://nextjs.org)                  | 16     | App Router, RSC, Server Actions, deploy trivial na Vercel |
+| [TypeScript](https://www.typescriptlang.org)   | 5      | Strict mode — sem `any`, sem surpresa                     |
+| [Tailwind CSS](https://tailwindcss.com)        | 4      | Paleta customizada com tokens Brasil (verde/amarelo/azul) |
+| [shadcn/ui](https://ui.shadcn.com)             | latest | Componentes acessíveis, sem lock-in de biblioteca         |
+| [Framer Motion](https://www.framer.com/motion) | 12     | Animações na home                                         |
+| [Lucide React](https://lucide.dev)             | latest | Ícones consistentes e tree-shakeable                      |
 
 ### Backend
 
-| Tecnologia                                                                                         | Versão | Por quê                                                             |
-| -------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------- |
-| [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) | 16     | Fullstack no mesmo projeto, zero overhead                           |
-| [Prisma](https://www.prisma.io)                                                                    | 7      | ORM com migrations, type-safe queries, schema como fonte de verdade |
-| [NextAuth v5](https://authjs.dev)                                                                  | beta   | Login social (Google + GitHub) sem precisar gerenciar senha         |
-
-### Resultados automáticos
-
-Os placares são **sincronizados automaticamente** via [football-data.org](https://www.football-data.org) (free tier). Um cron job roda a cada 5 minutos durante a Copa e, quando um jogo termina, busca o placar final, atualiza o `Match` no banco e dispara o cálculo de pontos para todos os palpites daquele jogo.
-
-| Componente                 | Função                                                              |
-| -------------------------- | ------------------------------------------------------------------- |
-| `GET /api/cron/resultados` | Route handler protegida por `CRON_SECRET`, chamada pelo Vercel Cron |
-| `lib/football-api.ts`      | Client da football-data.org com cache e tratamento de erros         |
-| `lib/scoring.ts`           | Motor de pontuação — função pura chamada pelo cron                  |
-| Painel admin               | Fallback para correções manuais quando necessário                   |
-
-> Variável necessária: `FOOTBALL_DATA_API_KEY` (gratuita em [football-data.org](https://www.football-data.org/client/register))
+| Tecnologia                                                                                         | Versão  | Por quê                                                             |
+| -------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------- |
+| [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) | 16      | Fullstack no mesmo projeto, zero overhead                           |
+| [Prisma](https://www.prisma.io)                                                                    | 7       | ORM com migrations, type-safe queries, schema como fonte de verdade |
+| [NextAuth v5](https://authjs.dev)                                                                  | beta.31 | Login social (Google + GitHub) sem precisar gerenciar senha         |
+| [React](https://react.dev)                                                                         | 19      | Base do frontend                                                    |
 
 ### Banco de dados
 
@@ -97,10 +131,38 @@ Os placares são **sincronizados automaticamente** via [football-data.org](https
 
 ### Deploy
 
-| Serviço                      | Uso                                                        |
-| ---------------------------- | ---------------------------------------------------------- |
-| [Vercel](https://vercel.com) | Deploy automático a cada push na `main` + Vercel Cron Jobs |
-| [Neon](https://neon.tech)    | Banco em produção, região São Paulo                        |
+| Serviço                      | Uso                                     |
+| ---------------------------- | --------------------------------------- |
+| [Vercel](https://vercel.com) | Deploy automático a cada push na `main` |
+| [Neon](https://neon.tech)    | Banco em produção, região São Paulo     |
+
+---
+
+## Cron de resultados
+
+Os placares são sincronizados automaticamente via [football-data.org](https://www.football-data.org) (free tier). O cron roda via **GitHub Actions** a cada 15 minutos e, quando um jogo termina, busca o placar final, atualiza o `Match` no banco e calcula os pontos para todos os palpites daquele jogo.
+
+```
+GitHub Actions (a cada 15 min)
+  → GET /api/cron/resultados  (autenticado via CRON_SECRET)
+    → football-data.org API
+      → Match FINISHED? → atualiza placar no banco
+        → calcula pontos de cada Prediction (lib/scoring.ts)
+```
+
+| Componente                   | Função                                                  |
+| ---------------------------- | ------------------------------------------------------- |
+| `.github/workflows/cron.yml` | Agenda e dispara o job a cada 15 min                    |
+| `GET /api/cron/resultados`   | Route handler protegida por `CRON_SECRET`               |
+| `lib/football-api.ts`        | Client da football-data.org com rate limiting e timeout |
+| `lib/scoring.ts`             | Motor de pontuação — função pura chamada pelo cron      |
+
+**GitHub Secrets necessários para o cron:**
+
+```
+APP_URL        # URL da aplicação em produção (ex: https://brasa-pi.vercel.app)
+CRON_SECRET    # mesmo valor definido em CRON_SECRET no ambiente Vercel
+```
 
 ---
 
@@ -109,57 +171,57 @@ Os placares são **sincronizados automaticamente** via [football-data.org](https
 ```
 brasa/
 ├── src/
-│   ├── app/                  # Next.js App Router
-│   │   ├── (auth)/           # Grupo de rotas públicas (login)
-│   │   ├── (main)/           # Rotas protegidas (jogos, ranking, palpites)
-│   │   ├── admin/            # Painel admin — correções manuais de placar
+│   ├── app/                    # Next.js App Router
+│   │   ├── (auth)/             # Rotas públicas
+│   │   │   └── login/          # Página de login (Google + GitHub)
+│   │   ├── (main)/             # Rotas protegidas
+│   │   │   ├── jogos/          # Lista 48 jogos agrupados por fase/grupo
+│   │   │   ├── palpites/       # Histórico de palpites do usuário
+│   │   │   └── ranking/        # Ranking geral (skeleton)
+│   │   ├── admin/              # Painel admin (guard por role ADMIN)
+│   │   │   ├── jogos/          # Gestão de jogos
+│   │   │   └── resultados/     # Override manual de resultados
 │   │   └── api/
-│   │       ├── auth/         # NextAuth handlers
-│   │       ├── jogos/        # CRUD de jogos
-│   │       ├── palpites/     # Salvar/consultar palpites
+│   │       ├── auth/           # NextAuth handlers
+│   │       ├── jogos/          # GET — lista 48 jogos
+│   │       ├── palpites/       # GET/POST — histórico e salvar palpites
 │   │       └── cron/
 │   │           └── resultados/ # Cron job — busca placares e calcula pontos
 │   ├── components/
-│   │   ├── brasa/            # Logo e identidade visual
-│   │   ├── jogos/            # Cards e lista de jogos
-│   │   ├── palpites/         # Formulário e histórico de palpites
-│   │   ├── ranking/          # Tabela de ranking
-│   │   └── ui/               # shadcn/ui (gerado)
+│   │   ├── brasa/              # Logo e identidade visual
+│   │   ├── jogos/              # Cards e lista de jogos
+│   │   ├── palpites/           # Formulário e histórico de palpites
+│   │   ├── ranking/            # Tabela de ranking
+│   │   └── ui/                 # shadcn/ui (gerado)
 │   ├── lib/
-│   │   ├── auth.ts           # Configuração NextAuth
-│   │   ├── db.ts             # Prisma Client singleton
-│   │   ├── football-api.ts   # Client football-data.org
-│   │   ├── scoring.ts        # Motor de pontuação (função pura)
-│   │   └── utils.ts          # cn() e helpers
-│   ├── hooks/                # React hooks customizados
-│   └── types/                # Tipos globais
+│   │   ├── auth.ts             # Configuração NextAuth
+│   │   ├── db.ts               # Prisma Client singleton (Neon adapter)
+│   │   ├── football-api.ts     # Client football-data.org
+│   │   ├── scoring.ts          # Motor de pontuação (função pura)
+│   │   └── utils.ts            # cn() e helpers
+│   ├── hooks/                  # React hooks customizados
+│   └── types/                  # Tipos globais
 ├── prisma/
-│   ├── schema.prisma         # Fonte de verdade do banco
-│   └── seed.ts               # 48 jogos da Copa 2026
+│   ├── schema.prisma           # Fonte de verdade do banco
+│   └── seed.ts                 # 48 jogos da Copa 2026
 └── .github/
-    └── workflows/ci.yml      # GitHub Actions
+    └── workflows/
+        ├── ci.yml              # CI: lint + typecheck em PRs
+        └── cron.yml            # Cron: atualiza placares a cada 15 min
 ```
 
 ### Modelo de dados
 
 ```
 User ──< Prediction >── Match
+ └──< Account
+ └──< Session
 ```
 
-- **User** — conta criada via login social
-- **Match** — os 48 jogos da Copa, atualizado automaticamente pelo cron
-- **Prediction** — palpite de um usuário para um jogo (placar + artilheiro)
-
-### Fluxo de resultados
-
-```
-Vercel Cron (a cada 5min)
-  → GET /api/cron/resultados
-    → football-data.org API
-      → Match FINISHED? → atualiza placar no banco
-        → calcula pontos de cada Prediction
-          → revalidateTag('ranking')
-```
+- **User** — conta criada via login social; tem role USER ou ADMIN
+- **Match** — os 48 jogos da Copa (fases GROUP até FINAL), com status SCHEDULED/LIVE/FINISHED/CANCELLED
+- **Prediction** — palpite de um usuário para um jogo (placar + artilheiro opcional); armazena `pointsEarned` e flag `calculated`
+- **Account / Session** — gerenciados pelo NextAuth v5
 
 ---
 
@@ -189,15 +251,25 @@ cp .env.example .env.local
 Preencha o `.env.local`:
 
 ```env
-DATABASE_URL="postgresql://..."
-DIRECT_URL="postgresql://..."
-AUTH_SECRET="..."               # openssl rand -base64 32
+# Banco de dados (Neon)
+DATABASE_URL="postgresql://..."     # connection pooling
+DIRECT_URL="postgresql://..."       # direct connection (migrations)
+
+# NextAuth
+AUTH_SECRET="..."                   # openssl rand -base64 32
+AUTH_URL="http://localhost:3000"    # URL base da aplicação
+
+# OAuth — Google
 AUTH_GOOGLE_ID="..."
 AUTH_GOOGLE_SECRET="..."
+
+# OAuth — GitHub
 AUTH_GITHUB_ID="..."
 AUTH_GITHUB_SECRET="..."
-FOOTBALL_DATA_API_KEY="..."     # football-data.org
-CRON_SECRET="..."               # openssl rand -base64 32
+
+# Resultados automáticos
+FOOTBALL_DATA_API_KEY="..."         # football-data.org (free tier)
+CRON_SECRET="..."                   # openssl rand -base64 32
 ```
 
 ```bash
@@ -215,13 +287,17 @@ Acesse [http://localhost:3000](http://localhost:3000)
 
 ```bash
 pnpm dev            # servidor de desenvolvimento
-pnpm build          # build de produção
+pnpm build          # prisma generate + build de produção
+pnpm start          # servidor de produção
 pnpm lint           # ESLint (0 warnings tolerados)
 pnpm lint:fix       # ESLint com auto-fix
 pnpm format         # Prettier em todo src/
+pnpm format:check   # Verifica formatação sem alterar
 pnpm typecheck      # tsc --noEmit
+pnpm db:generate    # prisma generate
+pnpm db:migrate     # nova migration (dev)
+pnpm db:push        # push do schema sem migration (dev rápido)
 pnpm db:studio      # Prisma Studio (UI do banco)
-pnpm db:migrate     # nova migration
 pnpm db:seed        # popular com os 48 jogos
 ```
 
@@ -235,7 +311,7 @@ Contribuições são bem-vindas! Leia o [CONTRIBUTING.md](./CONTRIBUTING.md) ant
 
 ```bash
 # 1. Fork e clone
-git clone https://github.com/SEU-USER/brasa.git
+git clone https://github.com/mauricioandrade/brasa.git
 
 # 2. Crie uma branch
 git checkout -b feat/minha-feature
@@ -267,9 +343,9 @@ Veja as [milestones](https://github.com/mauricioandrade/brasa/milestones) e as [
 
 | Milestone                                              | Status          |
 | ------------------------------------------------------ | --------------- |
-| v0.1 — Base (scaffold, auth, banco, deploy)            | 🚧 Em andamento |
-| v0.2 — Palpites (jogos, formulário, kickoff lock)      | ⏳ Pendente     |
-| v0.3 — Pontuação (motor de pontos, cron de resultados) | ⏳ Pendente     |
+| v0.1 — Base (scaffold, auth, banco, deploy)            | ✅ Concluído    |
+| v0.2 — Palpites (jogos, formulário, kickoff lock)      | 🚧 Em andamento |
+| v0.3 — Pontuação (motor de pontos, cron de resultados) | 🚧 Em andamento |
 | v0.4 — Ranking (ranking geral, perfil)                 | ⏳ Pendente     |
 | v1.0 — Copa ao vivo (ao vivo, mata-mata, performance)  | ⏳ Pendente     |
 
