@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         hostname: 'www.thesportsdb.com',
         pathname: '/images/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
     ],
   },
   async headers() {

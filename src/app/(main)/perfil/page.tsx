@@ -92,12 +92,20 @@ export default async function PerfilPage() {
               alt={session.user.name ?? 'Avatar'}
               width={64}
               height={64}
-              className="rounded-full shrink-0"
+              className="rounded-full shrink-0 ring-2 ring-verde-500/20"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-verde-500/20 flex items-center justify-center shrink-0">
-              <span className="font-display text-2xl text-verde-500">
-                {(session.user.name ?? session.user.email ?? 'U')[0].toUpperCase()}
+            <div
+              className="w-16 h-16 rounded-full shrink-0 flex items-center justify-center ring-2 ring-verde-500/25"
+              style={{ background: 'linear-gradient(135deg, #003d18 0%, #001a0a 100%)' }}
+            >
+              <span className="font-display text-xl text-verde-500 leading-none select-none">
+                {(session.user.name ?? session.user.email ?? 'US')
+                  .split(' ')
+                  .map((w: string) => w[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase()}
               </span>
             </div>
           )}
