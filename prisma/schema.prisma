@@ -111,3 +111,25 @@ enum MatchStatus {
   FINISHED
   CANCELLED
 }
+
+enum AwardCategory {
+  TOP_SCORER
+  BEST_GOALKEEPER
+  BEST_PLAYER
+  BEST_DEFENSE
+}
+
+model PhaseAward {
+  id         String        @id @default(cuid())
+  phase      Phase
+  category   AwardCategory
+  playerName String
+  team       String
+  flag       String
+  stat       String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@unique([phase, category])
+  @@map("phase_awards")
+}
