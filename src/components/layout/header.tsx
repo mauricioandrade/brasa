@@ -10,7 +10,7 @@ export async function Header() {
   const session = await auth()
 
   return (
-    <header className="h-14 border-b border-white/5 bg-brasa-bg/80 backdrop-blur-sm sticky top-0 z-50 flex items-center px-4 sm:px-6 gap-4">
+    <header className="h-14 border-b border-white/5 bg-brasa-bg/95 backdrop-blur-sm sticky top-0 z-50 flex items-center px-4 sm:px-6 gap-4">
       <Link href="/" className="flex-shrink-0">
         <BrasaLogo size="sm" />
       </Link>
@@ -22,7 +22,8 @@ export async function Header() {
       <div className="flex items-center gap-3 flex-shrink-0">
         {session?.user ? (
           <>
-            <div className="hidden sm:flex items-center gap-2">
+            {/* Avatar always visible */}
+            <div className="flex items-center gap-2">
               {session.user.image ? (
                 <Image
                   src={session.user.image}
@@ -36,7 +37,8 @@ export async function Header() {
                   {session.user.name?.[0]?.toUpperCase()}
                 </div>
               )}
-              <span className="text-white/60 text-sm truncate max-w-24">
+              {/* Name hidden on mobile */}
+              <span className="hidden sm:block text-sm text-white/70 truncate max-w-24">
                 {session.user.name?.split(' ')[0]}
               </span>
             </div>
@@ -48,7 +50,7 @@ export async function Header() {
             >
               <button
                 type="submit"
-                className="text-xs text-white/40 hover:text-white/70 transition-colors px-2 py-1 rounded border border-white/10 hover:border-white/20"
+                className="text-xs text-white/30 hover:text-white/60 transition-colors"
               >
                 Sair
               </button>
