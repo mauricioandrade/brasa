@@ -121,7 +121,7 @@ function HomeContent() {
         {/* Título — letra por letra com flip 3D + hover Brasil */}
         <div className="flex flex-col items-center gap-3">
           <h1
-            className="font-display text-7xl sm:text-9xl leading-none tracking-wide flex cursor-default"
+            className="font-display text-5xl sm:text-7xl lg:text-9xl leading-none tracking-wide flex cursor-default"
             style={{ perspective: '600px' }}
           >
             {brasaLetters.map(({ letter, accent }, i) => (
@@ -148,7 +148,7 @@ function HomeContent() {
             ))}
           </h1>
           <motion.p
-            className="font-sans text-white/60 text-lg leading-snug"
+            className="font-sans text-white/60 text-base sm:text-lg leading-snug"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease, delay: 0.65 }}
@@ -171,7 +171,7 @@ function HomeContent() {
               {i > 0 && (
                 <span className="absolute left-0 top-1 text-white/10 text-xl select-none">·</span>
               )}
-              <span className="font-display text-3xl text-amarelo-400 leading-none">
+              <span className="font-display text-2xl sm:text-3xl text-amarelo-400 leading-none">
                 {stat.value}
               </span>
               <span className="text-xs text-white/40 uppercase tracking-widest leading-tight">

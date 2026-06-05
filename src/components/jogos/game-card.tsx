@@ -96,7 +96,7 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
 
   return (
     <motion.div
-      className={`rounded-2xl border border-white/5 border-t-2 ${topBorderClass} p-5 flex flex-col gap-4`}
+      className={`rounded-2xl border border-white/5 border-t-2 ${topBorderClass} p-3 sm:p-5 flex flex-col gap-3 sm:gap-4`}
       style={{
         background: 'linear-gradient(160deg, rgba(13,31,15,0.95) 0%, rgba(9,21,8,0.98) 100%)',
       }}
@@ -124,30 +124,34 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
       {/* Teams + score row */}
       <div className="flex items-center justify-between gap-2">
         {/* Home team */}
-        <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
-          <span className="text-4xl leading-none">{match.homeFlag}</span>
-          <span className="font-display text-3xl text-white leading-none truncate w-full text-center">
+        <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
+          <span className="text-3xl sm:text-4xl leading-none">{match.homeFlag}</span>
+          <span className="font-display text-base sm:text-2xl text-white leading-none truncate w-full text-center">
             {match.homeTeam.toUpperCase()}
           </span>
         </div>
 
         {/* Score or separator */}
-        <div className="flex items-center justify-center px-3 shrink-0">
+        <div className="flex items-center justify-center px-1 sm:px-3 shrink-0">
           {hasScore ? (
-            <div className="bg-black/20 rounded-lg px-4 py-2 flex items-center gap-2">
-              <span className="font-display text-4xl text-amarelo-400">{match.homeScore}</span>
-              <span className="text-white/30">:</span>
-              <span className="font-display text-4xl text-amarelo-400">{match.awayScore}</span>
+            <div className="bg-black/20 rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
+              <span className="font-display text-2xl sm:text-4xl text-amarelo-400">
+                {match.homeScore}
+              </span>
+              <span className="text-white/30 text-sm">:</span>
+              <span className="font-display text-2xl sm:text-4xl text-amarelo-400">
+                {match.awayScore}
+              </span>
             </div>
           ) : (
-            <span className="font-display text-3xl text-white/20 leading-none">×</span>
+            <span className="font-display text-xl sm:text-3xl text-white/20 leading-none">×</span>
           )}
         </div>
 
         {/* Away team */}
-        <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
-          <span className="text-4xl leading-none">{match.awayFlag}</span>
-          <span className="font-display text-3xl text-white leading-none truncate w-full text-center">
+        <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
+          <span className="text-3xl sm:text-4xl leading-none">{match.awayFlag}</span>
+          <span className="font-display text-base sm:text-2xl text-white leading-none truncate w-full text-center">
             {match.awayTeam.toUpperCase()}
           </span>
         </div>

@@ -33,7 +33,7 @@ function ScoreButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`w-8 h-8 rounded-full flex items-center justify-center text-base font-bold transition-colors disabled:opacity-25 disabled:cursor-not-allowed ${
+      className={`w-10 h-10 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-base font-bold transition-colors disabled:opacity-25 disabled:cursor-not-allowed ${
         variant === 'plus'
           ? 'bg-verde-500/20 border border-verde-500/40 text-verde-400 hover:bg-verde-500/30'
           : 'border border-white/15 text-white/40 hover:text-white hover:border-white/30'
@@ -106,9 +106,10 @@ export function PredictionForm({
               disabled={homeScore === 0}
               onClick={() => setHomeScore((s) => Math.max(0, s - 1))}
             />
-            <span className="font-display text-3xl text-white min-w-[1.5ch] text-center">
+            <span className="font-display text-2xl sm:text-3xl text-white min-w-[1.5ch] text-center">
               {homeScore}
             </span>
+
             <ScoreButton
               label="+"
               variant="plus"
@@ -130,7 +131,7 @@ export function PredictionForm({
               disabled={awayScore === 0}
               onClick={() => setAwayScore((s) => Math.max(0, s - 1))}
             />
-            <span className="font-display text-3xl text-white min-w-[1.5ch] text-center">
+            <span className="font-display text-2xl sm:text-3xl text-white min-w-[1.5ch] text-center">
               {awayScore}
             </span>
             <ScoreButton

@@ -40,9 +40,13 @@ export function PredictionCard({ prediction: p, index = 0 }: PredictionCardProps
         <div className="flex items-baseline gap-3">
           <span className="text-xs text-white/40 w-24 shrink-0">Meu palpite</span>
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-3xl text-white leading-none">{p.homeScore}</span>
+            <span className="font-display text-2xl sm:text-3xl text-white leading-none">
+              {p.homeScore}
+            </span>
             <span className="text-white/30 text-sm">×</span>
-            <span className="font-display text-3xl text-white leading-none">{p.awayScore}</span>
+            <span className="font-display text-2xl sm:text-3xl text-white leading-none">
+              {p.awayScore}
+            </span>
           </div>
         </div>
 
@@ -52,7 +56,7 @@ export function PredictionCard({ prediction: p, index = 0 }: PredictionCardProps
             <span className="text-xs text-white/40 w-24 shrink-0">Resultado</span>
             <div className="flex items-baseline gap-2">
               <span
-                className={`font-display text-3xl leading-none ${
+                className={`font-display text-2xl sm:text-3xl leading-none ${
                   hasPoints ? 'text-amarelo-400' : 'text-white/40'
                 }`}
               >
@@ -62,7 +66,7 @@ export function PredictionCard({ prediction: p, index = 0 }: PredictionCardProps
                 ×
               </span>
               <span
-                className={`font-display text-3xl leading-none ${
+                className={`font-display text-2xl sm:text-3xl leading-none ${
                   hasPoints ? 'text-amarelo-400' : 'text-white/40'
                 }`}
               >

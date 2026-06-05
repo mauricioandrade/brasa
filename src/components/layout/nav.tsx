@@ -14,14 +14,14 @@ export function Nav() {
   const pathname = usePathname()
 
   return (
-    <nav className="flex gap-1 sm:gap-4">
+    <nav className="flex gap-0.5 sm:gap-4">
       {links.map((l) => {
         const active = pathname.startsWith(l.href)
         return (
           <Link
             key={l.href}
             href={l.href}
-            className={`relative text-sm px-2 py-1 flex flex-col items-center gap-0.5 transition-colors ${
+            className={`relative text-xs sm:text-sm px-1.5 sm:px-2 py-1 flex flex-col items-center gap-0.5 transition-colors ${
               active ? 'text-white' : 'text-white/50 hover:text-white/80'
             }`}
           >

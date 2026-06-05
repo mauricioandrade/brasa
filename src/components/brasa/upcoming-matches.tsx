@@ -69,7 +69,7 @@ export function UpcomingMatches() {
             <Link
               key={m.id}
               href="/jogos"
-              className="flex items-center gap-3 rounded-xl border border-white/6 bg-white/3 px-3 py-2 hover:border-verde-500/25 hover:bg-verde-500/5 transition-colors"
+              className="flex items-center gap-3 rounded-xl border border-white/6 bg-white/3 px-3 py-2.5 hover:border-verde-500/25 hover:bg-verde-500/5 transition-colors"
             >
               <span className="text-[10px] text-white/25 w-12 shrink-0 leading-tight">
                 <span className="block">{day}</span>
@@ -77,9 +77,9 @@ export function UpcomingMatches() {
               </span>
               <div className="flex items-center gap-1.5 flex-1 min-w-0">
                 <span className="text-base leading-none">{m.homeFlag}</span>
-                <span className="text-[11px] text-white/60 truncate">{m.homeTeam}</span>
+                <span className="text-xs text-white/60 truncate">{m.homeTeam}</span>
                 <span className="text-white/20 text-[10px] mx-0.5">×</span>
-                <span className="text-[11px] text-white/60 truncate">{m.awayTeam}</span>
+                <span className="text-xs text-white/60 truncate">{m.awayTeam}</span>
                 <span className="text-base leading-none">{m.awayFlag}</span>
               </div>
               <span className="text-[9px] text-verde-500/50 shrink-0">palpitar →</span>

@@ -67,7 +67,7 @@ export function RankingTable({ ranking, currentUserId }: RankingTableProps) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, ease: 'easeOut', delay: idx * 0.04 }}
               whileHover={{ x: 4, transition: { duration: 0.15 } }}
-              className={`flex items-center gap-4 rounded-2xl px-4 border transition-colors duration-150 ${isMe ? 'bg-verde-500/8 border-verde-500/30' : `bg-brasa-surface ${borderClass}`} ${isFirst ? 'py-4' : 'py-3'}`}
+              className={`flex items-center gap-2 sm:gap-4 rounded-2xl px-2 sm:px-4 border transition-colors duration-150 ${isMe ? 'bg-verde-500/8 border-verde-500/30' : `bg-brasa-surface ${borderClass}`} ${isFirst ? 'py-4' : 'py-3'}`}
               style={isMe ? {} : cardStyle}
             >
               {/* Position */}
@@ -101,7 +101,9 @@ export function RankingTable({ ranking, currentUserId }: RankingTableProps) {
                 <div className="flex items-center gap-2">
                   <p
                     className={`font-semibold truncate ${
-                      isFirst ? 'font-display text-xl text-white' : 'text-white'
+                      isFirst
+                        ? 'font-display text-lg sm:text-xl text-white'
+                        : 'text-sm sm:text-base text-white'
                     }`}
                   >
                     {entry.name}

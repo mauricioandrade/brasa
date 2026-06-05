@@ -149,8 +149,10 @@ export default async function PerfilPage() {
 
         <div className="mt-5 pt-5 border-t border-white/5">
           <div className="flex items-baseline gap-3 mb-3">
-            <span className="font-display text-5xl leading-none">{rank.emoji}</span>
-            <span className="font-display text-4xl text-amarelo-400 leading-none">{rank.name}</span>
+            <span className="font-display text-4xl sm:text-5xl leading-none">{rank.emoji}</span>
+            <span className="font-display text-3xl sm:text-4xl text-amarelo-400 leading-none">
+              {rank.name}
+            </span>
             <span className="text-white/40 text-sm">{totalPoints} pts</span>
           </div>
 
@@ -168,40 +170,40 @@ export default async function PerfilPage() {
       </div>
 
       {/* Section 2 — Stats */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
         {/* Pontos — destacado com fundo amarelo sutil */}
         <div
-          className="rounded-xl border border-amarelo-400/20 p-4"
+          className="rounded-xl border border-amarelo-400/20 p-3 sm:p-4"
           style={{ background: 'linear-gradient(135deg, #0d1f0f 0%, #141400 100%)' }}
         >
-          <p className="font-display text-4xl text-amarelo-400">{totalPoints}</p>
-          <p className="text-sm text-white/50 mt-1">pontos total</p>
+          <p className="font-display text-3xl sm:text-4xl text-amarelo-400">{totalPoints}</p>
+          <p className="text-xs sm:text-sm text-white/50 mt-1">pontos total</p>
         </div>
         {/* Acertos — verde accent */}
         <div
-          className="rounded-xl border border-verde-500/20 p-4"
+          className="rounded-xl border border-verde-500/20 p-3 sm:p-4"
           style={{ background: 'linear-gradient(135deg, #0d1f0f 0%, #001a08 100%)' }}
         >
-          <p className="font-display text-4xl text-verde-500">{accuracy}%</p>
-          <p className="text-sm text-white/50 mt-1">acertos</p>
+          <p className="font-display text-3xl sm:text-4xl text-verde-500">{accuracy}%</p>
+          <p className="text-xs sm:text-sm text-white/50 mt-1">acertos</p>
         </div>
         {/* Placares exatos — neutro */}
-        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
-          <p className="font-display text-4xl text-white/80">{exactScores}</p>
-          <p className="text-sm text-white/50 mt-1">placares exatos</p>
+        <div className="bg-brasa-surface rounded-xl border border-white/5 p-3 sm:p-4">
+          <p className="font-display text-3xl sm:text-4xl text-white/80">{exactScores}</p>
+          <p className="text-xs sm:text-sm text-white/50 mt-1">placares exatos</p>
         </div>
         {/* Palpites — neutro */}
-        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
-          <p className="font-display text-4xl text-white/80">{predictions.length}</p>
-          <p className="text-sm text-white/50 mt-1">palpites feitos</p>
+        <div className="bg-brasa-surface rounded-xl border border-white/5 p-3 sm:p-4">
+          <p className="font-display text-3xl sm:text-4xl text-white/80">{predictions.length}</p>
+          <p className="text-xs sm:text-sm text-white/50 mt-1">palpites feitos</p>
         </div>
       </div>
 
       {/* Section 2b — Streak */}
       {streakBest > 0 && (
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
           <div
-            className={`rounded-xl border p-4 ${
+            className={`rounded-xl border p-3 sm:p-4 ${
               streakCurrent >= 3
                 ? 'border-orange-500/30 bg-orange-500/8'
                 : 'border-white/5 bg-brasa-surface'
@@ -209,17 +211,17 @@ export default async function PerfilPage() {
           >
             <div className="flex items-baseline gap-1.5">
               <p
-                className={`font-display text-4xl ${streakCurrent >= 3 ? 'text-orange-400' : 'text-white/80'}`}
+                className={`font-display text-3xl sm:text-4xl ${streakCurrent >= 3 ? 'text-orange-400' : 'text-white/80'}`}
               >
                 {streakCurrent}
               </p>
               {streakCurrent >= 3 && <span className="text-xl">🔥</span>}
             </div>
-            <p className="text-sm text-white/50 mt-1">sequência atual</p>
+            <p className="text-xs sm:text-sm text-white/50 mt-1">sequência atual</p>
           </div>
-          <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
-            <p className="font-display text-4xl text-white/80">{streakBest}</p>
-            <p className="text-sm text-white/50 mt-1">melhor sequência</p>
+          <div className="bg-brasa-surface rounded-xl border border-white/5 p-3 sm:p-4">
+            <p className="font-display text-3xl sm:text-4xl text-white/80">{streakBest}</p>
+            <p className="text-xs sm:text-sm text-white/50 mt-1">melhor sequência</p>
           </div>
         </div>
       )}
@@ -227,7 +229,7 @@ export default async function PerfilPage() {
       {/* Section 3 — Last 5 predictions */}
       {last5.length > 0 && (
         <div className="bg-brasa-surface rounded-xl border border-white/5 p-4 mb-4">
-          <h2 className="font-display text-2xl text-white mb-3">Últimos palpites</h2>
+          <h2 className="font-display text-xl sm:text-2xl text-white mb-3">Últimos palpites</h2>
           <div className="flex flex-col gap-2">
             {last5.map((p) => {
               const hasResult = p.match.homeScore !== null && p.match.awayScore !== null
@@ -274,8 +276,8 @@ export default async function PerfilPage() {
 
       {/* Section 4 — Achievements */}
       <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
-        <h2 className="font-display text-2xl text-white mb-3">Conquistas</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <h2 className="font-display text-xl sm:text-2xl text-white mb-3">Conquistas</h2>
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {achievements.map((a) => (
             <div
               key={a.id}

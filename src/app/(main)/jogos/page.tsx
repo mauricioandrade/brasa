@@ -30,7 +30,7 @@ export default async function JogosPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 py-8 relative">
       <div className="max-w-2xl mx-auto relative z-10">
-        <h1 className="font-display text-8xl sm:text-9xl text-white leading-none mb-0 tracking-wide">
+        <h1 className="font-display text-5xl sm:text-8xl lg:text-9xl text-white leading-none mb-0 tracking-wide">
           JOGOS
         </h1>
         <p className="text-xs text-white/30 mb-6 mt-2">
