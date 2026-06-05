@@ -1,7 +1,11 @@
 import type { Metadata } from 'next'
-import { Bebas_Neue, Inter } from 'next/font/google'
+import { Bebas_Neue, Geist, Inter } from 'next/font/google'
+
+import { cn } from '@/lib/utils'
 
 import './globals.css'
+
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${bebas.variable}`}>
+    <html lang="pt-BR" className={cn(inter.variable, bebas.variable, 'font-sans', geist.variable)}>
       <body className="bg-brasa-bg text-white antialiased">{children}</body>
     </html>
   )
