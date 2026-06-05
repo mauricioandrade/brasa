@@ -76,7 +76,7 @@ export default async function PerfilPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto relative">
+    <main className="min-h-screen px-4 sm:px-6 py-8 max-w-2xl mx-auto relative">
       {/* Ambient glow */}
       <div
         className="absolute top-0 right-0 w-80 h-80 rounded-full pointer-events-none blur-3xl opacity-30"

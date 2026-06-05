@@ -22,7 +22,7 @@ export default async function PalpitesPage() {
   const pending = predictions.filter((p) => p.match.homeScore === null)
 
   return (
-    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
+    <main className="min-h-screen px-4 sm:px-6 py-8 max-w-2xl mx-auto">
       <h1 className="font-display text-4xl text-white mb-1">Meus Palpites</h1>
 
       {count > 0 && (

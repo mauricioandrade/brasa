@@ -15,7 +15,7 @@ interface PlayerFigurinaProps {
   size?: 'sm' | 'md'
 }
 
-function Initials({ name, color }: { name: string; color: string }) {
+function Initials({ name, color, isSmall }: { name: string; color: string; isSmall: boolean }) {
   const initials = name
     .split(' ')
     .map((w) => w[0])
@@ -24,8 +24,12 @@ function Initials({ name, color }: { name: string; color: string }) {
     .toUpperCase()
   return (
     <div
-      className="w-full h-full flex items-center justify-center font-display text-white"
-      style={{ backgroundColor: color, fontSize: '1.5rem', fontWeight: 700 }}
+      className="w-full h-full flex items-center justify-center font-display text-white/90"
+      style={{
+        background: `radial-gradient(circle at 50% 40%, ${color}80 0%, ${color}30 50%, transparent 75%)`,
+        fontSize: isSmall ? '1.2rem' : '1.5rem',
+        fontWeight: 700,
+      }}
     >
       {initials}
     </div>
@@ -61,35 +65,40 @@ export function PlayerFigurina({
         ${isSmall ? 'w-16' : 'w-24'}
         rounded-lg overflow-hidden flex flex-col border border-white/5 shrink-0
       `}
-      style={{ boxShadow: `0 0 0 1.5px ${color}55` }}
+      style={{
+        boxShadow: `0 0 0 1px ${color}60, 0 4px 16px ${color}30`,
+      }}
     >
       {/* Header — faixa colorida */}
       <div
-        className={`flex items-center justify-center gap-1 ${isSmall ? 'py-1 px-1' : 'py-1.5 px-2'}`}
+        className={`flex items-center justify-center gap-1 ${isSmall ? 'py-1.5 px-1' : 'py-2 px-2'}`}
         style={{ backgroundColor: color }}
       >
-        <span className={`leading-none ${isSmall ? 'text-base' : 'text-lg'}`}>{flag}</span>
-        {!isSmall && (
-          <span className="text-white font-bold tracking-widest" style={{ fontSize: '8px' }}>
-            {team.toUpperCase().slice(0, 3)}
-          </span>
-        )}
+        <span className={`leading-none ${isSmall ? 'text-sm' : 'text-lg'}`}>{flag}</span>
+        <span className="text-white/90 font-bold tracking-widest" style={{ fontSize: '7px' }}>
+          {team.toUpperCase().slice(0, 3)}
+        </span>
       </div>
 
       {/* Foto */}
       <div
         className={`relative overflow-hidden ${isSmall ? 'h-16' : 'h-24'}`}
-        style={{ backgroundColor: `${color}22` }}
+        style={{
+          background: `linear-gradient(180deg, ${color}55 0%, ${color}18 50%, #0d1f0f 100%)`,
+        }}
       >
         {photoUrl ? (
           <Image src={photoUrl} alt={name} fill className="object-cover object-top" unoptimized />
         ) : (
-          <Initials name={name} color={color} />
+          <Initials name={name} color={color} isSmall={isSmall} />
         )}
       </div>
 
       {/* Footer */}
-      <div className="bg-brasa-bg px-1.5 py-1">
+      <div
+        className="px-1.5 py-1"
+        style={{ background: `linear-gradient(135deg, ${color}15 0%, #030f04 100%)` }}
+      >
         <p
           className={`text-white font-bold truncate leading-none ${isSmall ? 'text-[9px]' : 'text-[11px]'}`}
         >

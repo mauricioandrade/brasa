@@ -28,7 +28,7 @@ export default async function RankingPage() {
   }))
 
   return (
-    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
+    <main className="min-h-screen px-4 sm:px-6 py-8 max-w-2xl mx-auto">
       <h1 className="font-display text-4xl text-white mb-1">Ranking</h1>
       <p className="text-sm text-white/40 mb-8">Copa do Mundo 2026</p>
 
