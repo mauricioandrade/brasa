@@ -7,6 +7,8 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { computeStreak, getNextRank, getProgress, getRank } from '@/lib/gamification'
 
+import { RankMedal } from '@/components/brasa/rank-medal'
+
 import { ProgressBar } from './progress-bar'
 
 export default async function PerfilPage() {
@@ -21,6 +23,15 @@ export default async function PerfilPage() {
     }),
     db.match.count(),
   ])
+
+  const rankingEntries = await db.prediction.groupBy({
+    by: ['userId'],
+    _sum: { pointsEarned: true },
+    having: { pointsEarned: { _sum: { gt: 0 } } },
+    orderBy: { _sum: { pointsEarned: 'desc' } },
+  })
+  const userRankPosition =
+    rankingEntries.findIndex((e) => e.userId === session.user.id) + 1
 
   const finished = predictions.filter((p) => p.calculated)
   const totalPoints = finished.reduce((sum, p) => sum + p.pointsEarned, 0)
@@ -105,6 +116,15 @@ export default async function PerfilPage() {
     },
   ]
 
+  function getRankMedalVariant(pos: number): { variant: 'trophy' | 'silver' | 'bronze'; label: string } | null {
+    if (pos === 1) return { variant: 'trophy', label: 'Líder do bolão' }
+    if (pos === 2) return { variant: 'silver', label: '2º lugar' }
+    if (pos === 3) return { variant: 'bronze', label: '3º lugar' }
+    return null
+  }
+
+  const medalInfo = userRankPosition > 0 ? getRankMedalVariant(userRankPosition) : null
+
   return (
     <main className="min-h-screen px-4 sm:px-6 py-8 max-w-2xl mx-auto relative">
       {/* Ambient glow */}
@@ -115,7 +135,7 @@ export default async function PerfilPage() {
       />
       {/* Section 1 — Identity */}
       <div className="bg-brasa-surface rounded-xl border border-white/5 p-6 mb-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {session.user.image ? (
             <Image
               src={session.user.image}
@@ -136,6 +156,15 @@ export default async function PerfilPage() {
                   .slice(0, 2)
                   .join('')
                   .toUpperCase()}
+              </span>
+            </div>
+          )}
+          {/* Rank medal (top 3 only) */}
+          {medalInfo && (
+            <div className="flex flex-col items-center gap-1 shrink-0">
+              <RankMedal variant={medalInfo.variant} size="lg" />
+              <span className="text-[10px] font-bold tracking-wider text-amarelo-400 uppercase">
+                {medalInfo.label}
               </span>
             </div>
           )}
