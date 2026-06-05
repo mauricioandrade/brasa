@@ -1,6 +1,10 @@
+import { PrismaNeon } from '@prisma/adapter-neon'
 import { PrismaClient } from '@prisma/client'
+import 'dotenv/config'
 
-const db = new PrismaClient()
+const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! })
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = new PrismaClient({ adapter } as any)
 
 const matches = [
   // Grupo A
