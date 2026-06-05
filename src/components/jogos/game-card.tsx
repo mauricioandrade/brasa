@@ -76,7 +76,10 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
 
   return (
     <motion.div
-      className="rounded-2xl bg-brasa-surface border border-white/5 p-5 flex flex-col gap-4"
+      className="rounded-2xl border border-white/5 p-5 flex flex-col gap-4"
+      style={{
+        background: 'linear-gradient(160deg, #0d1f0f 0%, #091508 100%)',
+      }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
@@ -84,12 +87,16 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
         ease: [0.16, 1, 0.3, 1],
         delay: index * 0.05,
       }}
-      whileHover={{ scale: 1.01, borderColor: 'rgba(255,255,255,0.1)' }}
+      whileHover={{
+        scale: 1.01,
+        borderColor: 'rgba(0,156,59,0.25)',
+        boxShadow: '0 0 24px rgba(0,156,59,0.08)',
+      }}
     >
       {/* Top row: status badge + time */}
       <div className="flex items-center justify-between">
         <StatusBadge status={match.status} />
-        <span className="text-xs text-white/40">{time} BRT</span>
+        <span className="text-xs text-white/50 tabular-nums">{time} BRT</span>
       </div>
 
       {/* Teams + score row */}
@@ -188,7 +195,7 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
               </p>
               <button
                 onClick={() => setOpen(true)}
-                className="inline-flex items-center gap-1 h-7 px-3 rounded-full border border-verde-500/50 hover:border-verde-500 text-verde-500 text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1 h-8 px-4 rounded-full border border-verde-500/60 hover:border-verde-500 hover:bg-verde-500/10 text-verde-500 text-xs font-bold transition-all"
               >
                 <Pencil size={10} />
                 Editar
@@ -198,7 +205,7 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
           {!userPrediction && !open && (
             <button
               onClick={() => setOpen(true)}
-              className="inline-flex items-center gap-1 h-7 px-3 rounded-full border border-verde-500/50 hover:border-verde-500 text-verde-500 text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1 h-8 px-4 rounded-full border border-verde-500/60 hover:border-verde-500 hover:bg-verde-500/10 text-verde-500 text-xs font-bold transition-all"
             >
               <Pencil size={10} />
               Palpitar
