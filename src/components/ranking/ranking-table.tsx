@@ -1,4 +1,8 @@
+'use client'
+
 import Image from 'next/image'
+
+import { motion } from 'framer-motion'
 
 import { getRank } from '@/lib/gamification'
 
@@ -16,6 +20,34 @@ interface RankingTableProps {
 
 const positionEmojis = ['🥇', '🥈', '🥉']
 
+function getPositionStyle(position: number) {
+  if (position === 1)
+    return {
+      borderClass: 'border-amarelo-400/30',
+      pointsClass: 'text-amarelo-400 font-display text-3xl',
+      cardStyle: {
+        background: 'linear-gradient(135deg, rgba(255,223,0,0.08) 0%, rgba(13,31,15,0.95) 100%)',
+      },
+    }
+  if (position === 2)
+    return {
+      borderClass: 'border-white/15',
+      pointsClass: 'text-white font-display text-2xl',
+      cardStyle: {},
+    }
+  if (position === 3)
+    return {
+      borderClass: 'border-white/10',
+      pointsClass: 'text-white/70 font-display text-2xl',
+      cardStyle: {},
+    }
+  return {
+    borderClass: 'border-white/5',
+    pointsClass: 'text-white/50 font-display text-xl',
+    cardStyle: {},
+  }
+}
+
 export function RankingTable({ ranking }: RankingTableProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -24,22 +56,28 @@ export function RankingTable({ ranking }: RankingTableProps) {
         const isFirst = entry.position === 1
         const isTop3 = entry.position <= 3
         const showSeparator = idx === 2 && ranking.length > 3
+        const { borderClass, pointsClass, cardStyle } = getPositionStyle(entry.position)
 
         return (
           <div key={entry.userId}>
-            <div
-              className={`flex items-center gap-4 bg-brasa-surface rounded-2xl px-4 py-3 border transition-all duration-150
-                ${isFirst ? 'border-amarelo-400/30 py-4' : isTop3 ? 'border-white/10' : 'border-white/5'}
-                hover:border-white/15 hover:bg-white/[0.02]`}
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut', delay: idx * 0.04 }}
+              whileHover={{ x: 4, transition: { duration: 0.15 } }}
+              className={`flex items-center gap-4 bg-brasa-surface rounded-2xl px-4 border transition-colors duration-150 ${borderClass} ${isFirst ? 'py-4' : 'py-3'}`}
+              style={cardStyle}
             >
+              {/* Position */}
               <span
-                className={`font-display w-8 text-center shrink-0 ${
-                  isFirst ? 'text-3xl' : isTop3 ? 'text-2xl' : 'text-lg text-white/30'
+                className={`font-display shrink-0 text-center ${
+                  isTop3 ? (isFirst ? 'text-3xl w-8' : 'text-2xl w-8') : 'text-lg text-white/30 w-8'
                 }`}
               >
                 {positionEmojis[entry.position - 1] ?? entry.position}
               </span>
 
+              {/* Avatar */}
               {entry.image ? (
                 <Image
                   src={entry.image}
@@ -56,21 +94,25 @@ export function RankingTable({ ranking }: RankingTableProps) {
                 </div>
               )}
 
+              {/* Name + rank */}
               <div className="flex-1 min-w-0">
                 <p
-                  className={`text-white font-semibold truncate ${isFirst ? 'font-display text-xl' : ''}`}
+                  className={`font-semibold truncate ${
+                    isFirst ? 'font-display text-xl text-white' : 'text-white'
+                  }`}
                 >
                   {entry.name}
                 </p>
-                <p className={`text-xs ${rank.color}`}>
+                <span
+                  className={`text-xs font-semibold ${rank.color} bg-white/5 rounded-full px-2 py-0.5`}
+                >
                   {rank.emoji} {rank.name}
-                </p>
+                </span>
               </div>
 
-              <span className="font-display text-2xl text-amarelo-400 shrink-0">
-                {entry.points}
-              </span>
-            </div>
+              {/* Points */}
+              <span className={`shrink-0 leading-none ${pointsClass}`}>{entry.points}</span>
+            </motion.div>
 
             {showSeparator && (
               <div className="flex items-center gap-3 my-3 px-2">

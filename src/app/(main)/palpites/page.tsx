@@ -50,8 +50,8 @@ export default async function PalpitesPage() {
             </span>
           </h2>
           <div className="flex flex-col gap-3">
-            {finished.map((p) => (
-              <PredictionCard key={p.id} prediction={p} />
+            {finished.map((p, i) => (
+              <PredictionCard key={p.id} prediction={p} index={i} />
             ))}
           </div>
         </section>
@@ -66,8 +66,8 @@ export default async function PalpitesPage() {
             </span>
           </h2>
           <div className="flex flex-col gap-3">
-            {pending.map((p) => (
-              <PredictionCard key={p.id} prediction={p} />
+            {pending.map((p, i) => (
+              <PredictionCard key={p.id} prediction={p} index={i} />
             ))}
           </div>
         </section>
