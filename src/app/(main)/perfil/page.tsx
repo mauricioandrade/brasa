@@ -76,7 +76,13 @@ export default async function PerfilPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
+    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto relative">
+      {/* Ambient glow */}
+      <div
+        className="absolute top-0 right-0 w-80 h-80 rounded-full pointer-events-none blur-3xl opacity-30"
+        style={{ background: 'radial-gradient(circle, rgba(0,156,59,0.25) 0%, transparent 70%)' }}
+        aria-hidden="true"
+      />
       {/* Section 1 — Identity */}
       <div className="bg-brasa-surface rounded-xl border border-white/5 p-6 mb-4">
         <div className="flex items-center gap-4">
@@ -125,20 +131,30 @@ export default async function PerfilPage() {
 
       {/* Section 2 — Stats */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
+        {/* Pontos — destacado com fundo amarelo sutil */}
+        <div
+          className="rounded-xl border border-amarelo-400/20 p-4"
+          style={{ background: 'linear-gradient(135deg, #0d1f0f 0%, #141400 100%)' }}
+        >
           <p className="font-display text-4xl text-amarelo-400">{totalPoints}</p>
           <p className="text-sm text-white/50 mt-1">pontos total</p>
         </div>
-        <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
-          <p className="font-display text-4xl text-amarelo-400">{accuracy}%</p>
+        {/* Acertos — verde accent */}
+        <div
+          className="rounded-xl border border-verde-500/20 p-4"
+          style={{ background: 'linear-gradient(135deg, #0d1f0f 0%, #001a08 100%)' }}
+        >
+          <p className="font-display text-4xl text-verde-500">{accuracy}%</p>
           <p className="text-sm text-white/50 mt-1">acertos</p>
         </div>
+        {/* Placares exatos — neutro */}
         <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
-          <p className="font-display text-4xl text-amarelo-400">{exactScores}</p>
+          <p className="font-display text-4xl text-white/80">{exactScores}</p>
           <p className="text-sm text-white/50 mt-1">placares exatos</p>
         </div>
+        {/* Palpites — neutro */}
         <div className="bg-brasa-surface rounded-xl border border-white/5 p-4">
-          <p className="font-display text-4xl text-amarelo-400">{predictions.length}</p>
+          <p className="font-display text-4xl text-white/80">{predictions.length}</p>
           <p className="text-sm text-white/50 mt-1">palpites feitos</p>
         </div>
       </div>

@@ -77,7 +77,10 @@ export function PlayerFigurina({
       </div>
 
       {/* Foto */}
-      <div className={`relative overflow-hidden bg-brasa-surface ${isSmall ? 'h-16' : 'h-24'}`}>
+      <div
+        className={`relative overflow-hidden ${isSmall ? 'h-16' : 'h-24'}`}
+        style={{ backgroundColor: `${color}22` }}
+      >
         {photoUrl ? (
           <Image src={photoUrl} alt={name} fill className="object-cover object-top" unoptimized />
         ) : (
