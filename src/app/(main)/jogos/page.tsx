@@ -1,4 +1,5 @@
 import { GameCard } from '@/components/jogos/game-card'
+import { PlayersBanner } from '@/components/layout/players-banner'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 
@@ -29,7 +30,12 @@ export default async function JogosPage() {
   return (
     <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
       <h1 className="font-display text-4xl text-white mb-1">Jogos</h1>
-      <p className="text-xs text-white/30 mb-8">{matches.length} jogos · Copa do Mundo 2026</p>
+      <p className="text-xs text-white/30 mb-4">{matches.length} jogos · Copa do Mundo 2026</p>
+
+      <PlayersBanner />
+
+      <div className="mb-8" />
+
       {Object.entries(groups)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([group, games]) => (
