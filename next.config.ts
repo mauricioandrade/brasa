@@ -1,6 +1,15 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.thesportsdb.com',
+        pathname: '/images/**',
+      },
+    ],
+  },
   async headers() {
     return [
       {
@@ -13,6 +22,6 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig
