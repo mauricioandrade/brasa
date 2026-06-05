@@ -31,7 +31,10 @@ export async function GET(request: Request) {
         where: {
           homeTeam: home,
           awayTeam: away,
-          scheduledAt: { gte: new Date(matchDate.getTime() - 3 * 60 * 60 * 1000) },
+          scheduledAt: {
+            gte: new Date(matchDate.getTime() - 3 * 60 * 60 * 1000),
+            lte: new Date(matchDate.getTime() + 3 * 60 * 60 * 1000),
+          },
           status: { not: 'FINISHED' },
         },
       })
@@ -55,7 +58,10 @@ export async function GET(request: Request) {
         where: {
           homeTeam,
           awayTeam,
-          scheduledAt: { gte: new Date(matchDate.getTime() - 3 * 60 * 60 * 1000) },
+          scheduledAt: {
+            gte: new Date(matchDate.getTime() - 3 * 60 * 60 * 1000),
+            lte: new Date(matchDate.getTime() + 3 * 60 * 60 * 1000),
+          },
           status: { not: 'FINISHED' },
         },
         include: { predictions: true },
@@ -69,34 +75,21 @@ export async function GET(request: Request) {
         data: { homeScore: home, awayScore: away, status: 'FINISHED' },
       })
 
-      // Calcular pontos de cada palpite.
-      // Usamos update individual por prediction porque cada palpite pode ter
-      // pontuação diferente (placar exato, vencedor, artilheiro). Um
-      // updateMany só seria viável se agrupássemos por pontos, o que exigiria
-      // calcular tudo primeiro e depois emitir um updateMany por grupo —
-      // complexidade maior sem ganho significativo para o volume esperado
-      // (~100 palpites por jogo no pior caso).
-      for (const prediction of match.predictions) {
-        if (prediction.calculated) continue
-
-        const points = calculatePoints(
-          {
-            homeScore: prediction.homeScore,
-            awayScore: prediction.awayScore,
-            topScorerName: prediction.topScorerName,
-          },
-          {
-            homeScore: home,
-            awayScore: away,
-            phase: match.phase as Phase,
-          },
-        )
-
-        await db.prediction.update({
-          where: { id: prediction.id },
-          data: { pointsEarned: points, calculated: true },
-        })
-      }
+      // Calcular pontos de cada palpite em paralelo.
+      await Promise.all(
+        match.predictions
+          .filter((p) => !p.calculated)
+          .map((p) => {
+            const points = calculatePoints(
+              { homeScore: p.homeScore, awayScore: p.awayScore, topScorerName: p.topScorerName },
+              { homeScore: home, awayScore: away, phase: match.phase as Phase },
+            )
+            return db.prediction.update({
+              where: { id: p.id },
+              data: { pointsEarned: points, calculated: true },
+            })
+          }),
+      )
 
       updatedScores++
     }

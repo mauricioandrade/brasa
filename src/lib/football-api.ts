@@ -35,7 +35,6 @@ async function fetchFD<T>(path: string): Promise<T> {
     const res = await fetch(`${BASE_URL}${path}`, {
       signal: controller.signal,
       headers: { 'X-Auth-Token': process.env.FOOTBALL_DATA_API_KEY! },
-      cache: 'force-cache',
       next: { revalidate: 60 },
     })
 
@@ -77,37 +76,72 @@ export async function getLiveMatches(): Promise<FDMatch[]> {
 
 // Mapeamento football-data.org (inglês) → nomes no seed (português)
 export const FD_TEAM_NAMES: Record<string, string> = {
+  // Grupo A
   'United States': 'Estados Unidos',
   Panama: 'Panamá',
   Mexico: 'México',
   Guatemala: 'Guatemala',
+  // Grupo B
   Argentina: 'Argentina',
   Peru: 'Peru',
   Chile: 'Chile',
   Ecuador: 'Equador',
+  // Grupo C
   Brazil: 'Brasil',
   Japan: 'Japão',
   Croatia: 'Croácia',
+  // Grupo D
   France: 'França',
   Australia: 'Austrália',
   Morocco: 'Marrocos',
   Tanzania: 'Tanzânia',
+  // Grupo E
   Spain: 'Espanha',
   'South Korea': 'Coreia do Sul',
   Germany: 'Alemanha',
   Bolivia: 'Bolívia',
+  // Grupo F
   Portugal: 'Portugal',
   Iran: 'Irã',
   Uruguay: 'Uruguai',
   Angola: 'Angola',
+  // Grupo G
   England: 'Inglaterra',
   Serbia: 'Sérvia',
   Netherlands: 'Holanda',
   Senegal: 'Senegal',
+  // Grupo H
   Italy: 'Itália',
   Nigeria: 'Nigéria',
   Belgium: 'Bélgica',
   Norway: 'Noruega',
+  // Times adicionais Copa 2026
+  Canada: 'Canadá',
+  Honduras: 'Honduras',
+  Jamaica: 'Jamaica',
+  'Costa Rica': 'Costa Rica',
+  Venezuela: 'Venezuela',
+  Paraguay: 'Paraguai',
+  Colombia: 'Colômbia',
+  'Saudi Arabia': 'Arábia Saudita',
+  'New Zealand': 'Nova Zelândia',
+  Indonesia: 'Indonésia',
+  'IR Iran': 'Irã',
+  'China PR': 'China',
+  Qatar: 'Catar',
+  'South Africa': 'África do Sul',
+  'DR Congo': 'República Democrática do Congo',
+  Egypt: 'Egito',
+  'Ivory Coast': 'Costa do Marfim',
+  Cameroon: 'Camarões',
+  Mali: 'Mali',
+  Switzerland: 'Suíça',
+  Austria: 'Áustria',
+  Ukraine: 'Ucrânia',
+  Turkey: 'Turquia',
+  Romania: 'Romênia',
+  Slovakia: 'Eslováquia',
+  Albania: 'Albânia',
 }
 
 export function toLocalName(fdName: string): string {

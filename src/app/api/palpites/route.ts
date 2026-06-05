@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { rateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +11,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
-  if (!rateLimit(session.user.id, 30, 60_000)) {
+  const recentCount = await db.prediction.count({
+    where: {
+      userId: session.user.id,
+      updatedAt: { gte: new Date(Date.now() - 60_000) },
+    },
+  })
+  if (recentCount >= 10) {
     return NextResponse.json({ error: 'Muitas requisições' }, { status: 429 })
   }
 
@@ -30,6 +35,8 @@ export async function POST(request: Request) {
       !matchId ||
       typeof homeScore !== 'number' ||
       typeof awayScore !== 'number' ||
+      !Number.isInteger(homeScore) ||
+      !Number.isInteger(awayScore) ||
       homeScore < 0 ||
       awayScore < 0 ||
       homeScore > 20 ||
@@ -37,6 +44,8 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
     }
+
+    const cleanTopScorer = topScorerName?.trim() || null
 
     const match = await db.match.findUnique({ where: { id: matchId } })
     if (!match) {
@@ -55,12 +64,12 @@ export async function POST(request: Request) {
         matchId,
         homeScore,
         awayScore,
-        topScorerName: topScorerName ?? null,
+        topScorerName: cleanTopScorer,
       },
       update: {
         homeScore,
         awayScore,
-        topScorerName: topScorerName ?? null,
+        topScorerName: cleanTopScorer,
       },
     })
 

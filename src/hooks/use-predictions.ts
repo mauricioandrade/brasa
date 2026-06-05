@@ -20,7 +20,10 @@ export function usePredictions() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ matchId, homeScore, awayScore, topScorerName }),
       })
-      if (!res.ok) throw new Error('Erro ao salvar palpite')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error((data as { error?: string }).error ?? 'Erro ao salvar palpite')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido')
     } finally {
