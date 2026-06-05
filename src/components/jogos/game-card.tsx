@@ -1,10 +1,15 @@
 'use client'
 
+import { useState } from 'react'
+
 import type { Match } from '@prisma/client'
 import { motion } from 'framer-motion'
 
+import { PredictionForm } from '@/components/palpites/prediction-form'
+
 interface GameCardProps {
   match: Match
+  userPrediction?: { homeScore: number; awayScore: number; topScorerName: string | null }
 }
 
 const STATUS_LABELS: Record<Match['status'], string> = {
@@ -50,24 +55,28 @@ function StatusBadge({ status }: { status: Match['status'] }) {
 }
 
 function formatDateBRT(date: Date): { date: string; time: string } {
-  const brtDate = new Date(date.getTime() - 3 * 60 * 60 * 1000)
-  const dateStr = brtDate.toLocaleDateString('pt-BR', {
-    timeZone: 'UTC',
+  const formatted = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
     weekday: 'short',
     day: '2-digit',
     month: '2-digit',
-  })
-  const timeStr = brtDate.toLocaleTimeString('pt-BR', {
-    timeZone: 'UTC',
     hour: '2-digit',
     minute: '2-digit',
-  })
+  }).format(date)
+  // formatted: "qui., 12/06, 15:00" — split on ", " to get date and time parts
+  const parts = formatted.split(', ')
+  const dateStr = parts.slice(0, -1).join(', ')
+  const timeStr = parts[parts.length - 1] ?? ''
   return { date: dateStr, time: timeStr }
 }
 
-export function GameCard({ match }: GameCardProps) {
+export function GameCard({ match, userPrediction }: GameCardProps) {
+  const [open, setOpen] = useState(false)
   const { date, time } = formatDateBRT(match.scheduledAt)
   const hasScore = match.homeScore !== null && match.awayScore !== null
+  const canPredict =
+    match.status === 'SCHEDULED' &&
+    new Date() < new Date(match.scheduledAt.getTime() - 5 * 60 * 1000)
 
   return (
     <motion.div
@@ -110,6 +119,39 @@ export function GameCard({ match }: GameCardProps) {
           <span className="text-2xl leading-none">{match.awayFlag}</span>
         </div>
       </div>
+
+      {/* Prediction section */}
+      {canPredict && (
+        <div>
+          {userPrediction && !open && (
+            <button
+              onClick={() => setOpen(true)}
+              className="text-xs text-verde-500 hover:text-verde-400 mt-1"
+            >
+              Palpite: {userPrediction.homeScore} × {userPrediction.awayScore} — editar
+            </button>
+          )}
+          {!userPrediction && !open && (
+            <button
+              onClick={() => setOpen(true)}
+              className="mt-2 w-full h-8 rounded-full border border-verde-500/50 hover:border-verde-500 text-verde-500 text-xs font-semibold transition-colors"
+            >
+              + Palpitar
+            </button>
+          )}
+          {open && (
+            <PredictionForm
+              matchId={match.id}
+              homeTeam={match.homeTeam}
+              awayTeam={match.awayTeam}
+              homeFlag={match.homeFlag}
+              awayFlag={match.awayFlag}
+              existingPrediction={userPrediction}
+              onSuccess={() => setOpen(false)}
+            />
+          )}
+        </div>
+      )}
     </motion.div>
   )
 }

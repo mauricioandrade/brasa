@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { PredictionCard } from '@/components/palpites/prediction-card'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 
@@ -17,30 +19,16 @@ export default async function PalpitesPage() {
     <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
       <h1 className="font-display text-4xl text-white mb-8">Meus Palpites</h1>
       {predictions.length === 0 && (
-        <p className="text-white/40">Você ainda não fez nenhum palpite.</p>
+        <div className="text-center py-12">
+          <p className="text-white/40 mb-4">Você ainda não fez nenhum palpite.</p>
+          <Link href="/jogos" className="text-verde-500 hover:text-verde-400 font-semibold">
+            Ver jogos e palpitar →
+          </Link>
+        </div>
       )}
       <div className="flex flex-col gap-3">
         {predictions.map((p) => (
-          <div key={p.id} className="bg-brasa-surface rounded-xl p-4 border border-white/5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-white/60 text-sm">
-                {p.match.homeFlag} {p.match.homeTeam} × {p.match.awayTeam} {p.match.awayFlag}
-              </span>
-              {p.calculated && (
-                <span className="text-amarelo-400 font-display text-lg">{p.pointsEarned}pts</span>
-              )}
-            </div>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-white font-semibold">
-                Palpite: {p.homeScore} × {p.awayScore}
-              </span>
-              {p.match.homeScore !== null && (
-                <span className="text-white/50">
-                  Resultado: {p.match.homeScore} × {p.match.awayScore}
-                </span>
-              )}
-            </div>
-          </div>
+          <PredictionCard key={p.id} prediction={p} />
         ))}
       </div>
     </main>

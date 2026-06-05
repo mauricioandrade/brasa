@@ -27,7 +27,9 @@ function fadeIn(delay: number) {
 
 const scoreCards = [
   { value: '7', label: 'placar exato', color: 'text-amarelo-400' },
+  { value: '4', label: 'empate certo', color: 'text-verde-500' },
   { value: '3', label: 'vencedor certo', color: 'text-verde-500' },
+  { value: '+2', label: 'artilheiro', color: 'text-white/60' },
   { value: '1.5×', label: 'mata-mata', color: 'text-amarelo-400' },
 ]
 
@@ -49,7 +51,7 @@ export function HomeAnimated() {
         </motion.div>
 
         {/* Score cards — stagger, delay 0.1 each starting at 0.3 */}
-        <div className="grid grid-cols-3 gap-4 w-full text-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full text-sm">
           {scoreCards.map((item, i) => (
             <motion.div
               key={item.label}
