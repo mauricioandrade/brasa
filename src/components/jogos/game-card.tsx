@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import type { Match } from '@prisma/client'
 import { motion } from 'framer-motion'
+import { Pencil } from 'lucide-react'
 
 import { PredictionForm } from '@/components/palpites/prediction-form'
 
@@ -34,7 +35,7 @@ function StatusBadge({ status }: { status: Match['status'] }) {
   }
   if (status === 'FINISHED') {
     return (
-      <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs font-semibold text-white/50">
+      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold text-white/30">
         {STATUS_LABELS[status]}
       </span>
     )
@@ -54,25 +55,17 @@ function StatusBadge({ status }: { status: Match['status'] }) {
   )
 }
 
-function formatDateBRT(date: Date): { date: string; time: string } {
-  const formatted = new Intl.DateTimeFormat('pt-BR', {
+function formatTimeBRT(date: Date): string {
+  return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
-    weekday: 'short',
-    day: '2-digit',
-    month: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
   }).format(date)
-  // formatted: "qui., 12/06, 15:00" — split on ", " to get date and time parts
-  const parts = formatted.split(', ')
-  const dateStr = parts.slice(0, -1).join(', ')
-  const timeStr = parts[parts.length - 1] ?? ''
-  return { date: dateStr, time: timeStr }
 }
 
 export function GameCard({ match, userPrediction }: GameCardProps) {
   const [open, setOpen] = useState(false)
-  const { date, time } = formatDateBRT(match.scheduledAt)
+  const time = formatTimeBRT(match.scheduledAt)
   const hasScore = match.homeScore !== null && match.awayScore !== null
   const canPredict =
     match.status === 'SCHEDULED' &&
@@ -80,63 +73,85 @@ export function GameCard({ match, userPrediction }: GameCardProps) {
 
   return (
     <motion.div
-      className="rounded-xl bg-brasa-surface border border-white/5 px-4 py-3 flex flex-col gap-2"
+      className="rounded-2xl bg-brasa-surface border border-white/5 p-5 flex flex-col gap-4"
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.15 }}
     >
-      {/* Top row: date/time + status */}
+      {/* Top row: status badge + time */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-white/40 capitalize">
-          {date} &middot; {time}
-        </span>
         <StatusBadge status={match.status} />
+        <span className="text-xs text-white/40">{time} BRT</span>
       </div>
 
-      {/* Teams row */}
+      {/* Teams + score row */}
       <div className="flex items-center justify-between gap-2">
         {/* Home team */}
-        <div className="flex flex-1 items-center gap-2 min-w-0">
-          <span className="text-2xl leading-none">{match.homeFlag}</span>
-          <span className="truncate text-sm font-semibold text-white">{match.homeTeam}</span>
+        <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
+          <span className="text-3xl leading-none">{match.homeFlag}</span>
+          <span className="font-display text-2xl text-white leading-none truncate w-full text-center">
+            {match.homeTeam.toUpperCase()}
+          </span>
         </div>
 
-        {/* Score or VS */}
-        <div className="flex items-center gap-1 px-2">
+        {/* Score or separator */}
+        <div className="flex items-center justify-center px-2 shrink-0">
           {hasScore ? (
-            <span className="font-display text-2xl text-white tracking-widest">
-              {match.homeScore} <span className="text-white/30">:</span> {match.awayScore}
+            <span className="font-display text-4xl text-amarelo-400 tracking-widest leading-none">
+              {match.homeScore}
+              <span className="text-white/20 mx-1">:</span>
+              {match.awayScore}
             </span>
           ) : (
-            <span className="font-display text-lg text-white/30">×</span>
+            <span className="font-display text-3xl text-white/20 leading-none">×</span>
           )}
         </div>
 
         {/* Away team */}
-        <div className="flex flex-1 items-center justify-end gap-2 min-w-0">
-          <span className="truncate text-sm font-semibold text-white text-right">
-            {match.awayTeam}
+        <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
+          <span className="text-3xl leading-none">{match.awayFlag}</span>
+          <span className="font-display text-2xl text-white leading-none truncate w-full text-center">
+            {match.awayTeam.toUpperCase()}
           </span>
-          <span className="text-2xl leading-none">{match.awayFlag}</span>
         </div>
       </div>
 
-      {/* Prediction section */}
+      {/* User prediction display (when game not predictable) */}
+      {userPrediction && !canPredict && !open && (
+        <p className="text-xs text-verde-500 text-center">
+          Seu palpite: {userPrediction.homeScore} × {userPrediction.awayScore}
+          {userPrediction.topScorerName && (
+            <span className="text-white/30"> · {userPrediction.topScorerName}</span>
+          )}
+        </p>
+      )}
+
+      {/* Prediction section (when can predict) */}
       {canPredict && (
         <div>
           {userPrediction && !open && (
-            <button
-              onClick={() => setOpen(true)}
-              className="text-xs text-verde-500 hover:text-verde-400 mt-1"
-            >
-              Palpite: {userPrediction.homeScore} × {userPrediction.awayScore} — editar
-            </button>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-verde-500">
+                Seu palpite: {userPrediction.homeScore} × {userPrediction.awayScore}
+                {userPrediction.topScorerName && (
+                  <span className="text-white/30"> · {userPrediction.topScorerName}</span>
+                )}
+              </p>
+              <button
+                onClick={() => setOpen(true)}
+                className="inline-flex items-center gap-1 h-7 px-3 rounded-full border border-verde-500/50 hover:border-verde-500 text-verde-500 text-xs font-semibold transition-colors"
+              >
+                <Pencil size={10} />
+                Editar
+              </button>
+            </div>
           )}
           {!userPrediction && !open && (
             <button
               onClick={() => setOpen(true)}
-              className="mt-2 w-full h-8 rounded-full border border-verde-500/50 hover:border-verde-500 text-verde-500 text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1 h-7 px-3 rounded-full border border-verde-500/50 hover:border-verde-500 text-verde-500 text-xs font-semibold transition-colors"
             >
-              + Palpitar
+              <Pencil size={10} />
+              Palpitar
             </button>
           )}
           {open && (

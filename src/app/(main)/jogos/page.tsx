@@ -2,6 +2,8 @@ import { GameCard } from '@/components/jogos/game-card'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 
+export const revalidate = 30
+
 export default async function JogosPage() {
   const session = await auth()
 
@@ -26,13 +28,17 @@ export default async function JogosPage() {
 
   return (
     <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
-      <h1 className="font-display text-4xl text-white mb-8">Jogos</h1>
+      <h1 className="font-display text-4xl text-white mb-1">Jogos</h1>
+      <p className="text-xs text-white/30 mb-8">{matches.length} jogos · Copa do Mundo 2026</p>
       {Object.entries(groups)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([group, games]) => (
           <section key={group} className="mb-8">
             <h2 className="font-display text-lg sm:text-xl text-amarelo-400 mb-3">
               {group.length === 1 ? `Grupo ${group}` : group.replace(/_/g, ' ')}
+              <span className="font-sans text-xs text-white/30 ml-2 normal-case">
+                · {games.length} jogos
+              </span>
             </h2>
             <div className="flex flex-col gap-2">
               {games.map((match) => (

@@ -14,53 +14,71 @@ interface RankingTableProps {
   ranking: RankingEntry[]
 }
 
-const positionColors = ['text-amarelo-400', 'text-white/60', 'text-amber-600']
 const positionEmojis = ['🥇', '🥈', '🥉']
 
 export function RankingTable({ ranking }: RankingTableProps) {
   return (
     <div className="flex flex-col gap-2">
-      {ranking.map((entry) => {
+      {ranking.map((entry, idx) => {
         const rank = getRank(entry.points)
+        const isFirst = entry.position === 1
         const isTop3 = entry.position <= 3
+        const showSeparator = idx === 2 && ranking.length > 3
 
         return (
-          <div
-            key={entry.userId}
-            className={`flex items-center gap-4 bg-brasa-surface rounded-xl px-4 py-3 border ${
-              isTop3 ? 'border-amarelo-400/20' : 'border-white/5'
-            }`}
-          >
-            <span
-              className={`font-display text-2xl w-8 text-center ${
-                positionColors[entry.position - 1] ?? 'text-white/30'
-              }`}
+          <div key={entry.userId}>
+            <div
+              className={`flex items-center gap-4 bg-brasa-surface rounded-2xl px-4 py-3 border transition-all duration-150
+                ${isFirst ? 'border-amarelo-400/30 py-4' : isTop3 ? 'border-white/10' : 'border-white/5'}
+                hover:border-white/15 hover:bg-white/[0.02]`}
             >
-              {positionEmojis[entry.position - 1] ?? entry.position}
-            </span>
+              <span
+                className={`font-display w-8 text-center shrink-0 ${
+                  isFirst ? 'text-3xl' : isTop3 ? 'text-2xl' : 'text-lg text-white/30'
+                }`}
+              >
+                {positionEmojis[entry.position - 1] ?? entry.position}
+              </span>
 
-            {entry.image ? (
-              <Image
-                src={entry.image}
-                alt={entry.name}
-                width={36}
-                height={36}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/40 text-sm">
-                {entry.name[0]?.toUpperCase()}
+              {entry.image ? (
+                <Image
+                  src={entry.image}
+                  alt={entry.name}
+                  width={isFirst ? 40 : 36}
+                  height={isFirst ? 40 : 36}
+                  className="rounded-full shrink-0"
+                />
+              ) : (
+                <div
+                  className={`rounded-full bg-white/10 flex items-center justify-center text-white/40 text-sm shrink-0 ${isFirst ? 'w-10 h-10' : 'w-9 h-9'}`}
+                >
+                  {entry.name[0]?.toUpperCase()}
+                </div>
+              )}
+
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-white font-semibold truncate ${isFirst ? 'font-display text-xl' : ''}`}
+                >
+                  {entry.name}
+                </p>
+                <p className={`text-xs ${rank.color}`}>
+                  {rank.emoji} {rank.name}
+                </p>
               </div>
-            )}
 
-            <div className="flex-1 min-w-0">
-              <p className="text-white font-semibold truncate">{entry.name}</p>
-              <p className={`text-xs ${rank.color}`}>
-                {rank.emoji} {rank.name}
-              </p>
+              <span className="font-display text-2xl text-amarelo-400 shrink-0">
+                {entry.points}
+              </span>
             </div>
 
-            <span className="font-display text-2xl text-amarelo-400">{entry.points}</span>
+            {showSeparator && (
+              <div className="flex items-center gap-3 my-3 px-2">
+                <div className="flex-1 h-px bg-white/5" />
+                <span className="text-xs text-white/20">demais participantes</span>
+                <div className="flex-1 h-px bg-white/5" />
+              </div>
+            )}
           </div>
         )
       })}
