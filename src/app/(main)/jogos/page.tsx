@@ -29,8 +29,12 @@ export default async function JogosPage() {
 
   return (
     <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
-      <h1 className="font-display text-4xl text-white mb-1">Jogos</h1>
-      <p className="text-xs text-white/30 mb-4">{matches.length} jogos · Copa do Mundo 2026</p>
+      <h1 className="font-display text-8xl sm:text-9xl text-white leading-none mb-0 tracking-wide">
+        JOGOS
+      </h1>
+      <p className="text-xs text-white/30 mb-6 mt-2">
+        {matches.length} jogos · <span className="text-amarelo-400/70">Copa do Mundo 2026</span>
+      </p>
 
       <PlayersBanner />
 
@@ -47,11 +51,12 @@ export default async function JogosPage() {
               </span>
             </h2>
             <div className="flex flex-col gap-2">
-              {games.map((match) => (
+              {games.map((match, i) => (
                 <GameCard
                   key={match.id}
                   match={match}
                   userPrediction={predictionMap.get(match.id) ?? undefined}
+                  index={i}
                 />
               ))}
             </div>

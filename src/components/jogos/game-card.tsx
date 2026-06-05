@@ -13,6 +13,7 @@ import { TEAM_STARS } from '@/lib/team-data'
 interface GameCardProps {
   match: Match
   userPrediction?: { homeScore: number; awayScore: number; topScorerName: string | null }
+  index?: number
 }
 
 const STATUS_LABELS: Record<Match['status'], string> = {
@@ -65,7 +66,7 @@ function formatTimeBRT(date: Date): string {
   }).format(date)
 }
 
-export function GameCard({ match, userPrediction }: GameCardProps) {
+export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
   const [open, setOpen] = useState(false)
   const time = formatTimeBRT(match.scheduledAt)
   const hasScore = match.homeScore !== null && match.awayScore !== null
@@ -76,8 +77,14 @@ export function GameCard({ match, userPrediction }: GameCardProps) {
   return (
     <motion.div
       className="rounded-2xl bg-brasa-surface border border-white/5 p-5 flex flex-col gap-4"
-      whileHover={{ scale: 1.01 }}
-      transition={{ duration: 0.15 }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.4,
+        ease: [0.16, 1, 0.3, 1],
+        delay: index * 0.05,
+      }}
+      whileHover={{ scale: 1.01, borderColor: 'rgba(255,255,255,0.1)' }}
     >
       {/* Top row: status badge + time */}
       <div className="flex items-center justify-between">

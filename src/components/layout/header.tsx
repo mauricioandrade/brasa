@@ -10,7 +10,16 @@ export async function Header() {
   const session = await auth()
 
   return (
-    <header className="h-14 border-b border-white/5 bg-brasa-bg/95 backdrop-blur-sm sticky top-0 z-50 flex items-center px-4 sm:px-6 gap-4">
+    <header className="h-14 border-b border-white/5 bg-brasa-bg/95 backdrop-blur-sm sticky top-0 z-50 flex items-center px-4 sm:px-6 gap-4 relative">
+      {/* Verde gradient line at bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to right, transparent, oklch(55% 0.18 145 / 0.35), transparent)',
+        }}
+        aria-hidden="true"
+      />
       <Link href="/" className="flex-shrink-0">
         <BrasaLogo size="sm" />
       </Link>
