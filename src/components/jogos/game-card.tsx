@@ -123,32 +123,37 @@ export function GameCard({ match, userPrediction }: GameCardProps) {
         const awayStar = TEAM_STARS[match.awayTeam]
         if (!homeStar && !awayStar) return null
         return (
-          <div className="flex items-center justify-between gap-2">
-            {homeStar ? (
-              <PlayerFigurina
-                name={homeStar.name}
-                team={match.homeTeam}
-                flag={match.homeFlag}
-                position={homeStar.position}
-                goals={0}
-                size="sm"
-              />
-            ) : (
-              <div className="w-16" />
-            )}
-            <span className="text-white/10 text-xs font-display">vs</span>
-            {awayStar ? (
-              <PlayerFigurina
-                name={awayStar.name}
-                team={match.awayTeam}
-                flag={match.awayFlag}
-                position={awayStar.position}
-                goals={0}
-                size="sm"
-              />
-            ) : (
-              <div className="w-16" />
-            )}
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[9px] font-bold tracking-[0.15em] text-white/20 uppercase">
+              Feras do confronto
+            </p>
+            <div className="flex items-center justify-between gap-2">
+              {homeStar ? (
+                <PlayerFigurina
+                  name={homeStar.name}
+                  team={match.homeTeam}
+                  flag={match.homeFlag}
+                  position={homeStar.position}
+                  goals={0}
+                  size="sm"
+                />
+              ) : (
+                <div className="w-16" />
+              )}
+              <span className="text-white/15 text-[10px]">⚡</span>
+              {awayStar ? (
+                <PlayerFigurina
+                  name={awayStar.name}
+                  team={match.awayTeam}
+                  flag={match.awayFlag}
+                  position={awayStar.position}
+                  goals={0}
+                  size="sm"
+                />
+              ) : (
+                <div className="w-16" />
+              )}
+            </div>
           </div>
         )
       })()}

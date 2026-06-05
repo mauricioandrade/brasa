@@ -29,8 +29,14 @@ export function PlayersBanner() {
   const items = [...players, ...players]
 
   return (
-    <div className="w-full overflow-hidden py-3 border-y border-white/5">
-      <div className="flex gap-3 w-max" style={{ animation: 'scroll-x 45s linear infinite' }}>
+    <div className="w-full overflow-hidden py-3 border-y border-white/10 group">
+      <p className="text-[10px] font-bold tracking-[0.2em] text-white/25 uppercase mb-2 px-0">
+        Estrelas da Copa
+      </p>
+      <div
+        className="flex gap-3 w-max group-hover:[animation-play-state:paused]"
+        style={{ animation: 'scroll-x 45s linear infinite' }}
+      >
         {items.map((p, i) => (
           <PlayerFigurina
             key={`${p.id}-${i}`}
