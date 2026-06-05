@@ -7,6 +7,7 @@ const links = [
   { href: '/jogos', label: 'Jogos' },
   { href: '/palpites', label: 'Palpites' },
   { href: '/ranking', label: 'Ranking' },
+  { href: '/premios', label: 'Prêmios' },
   { href: '/perfil', label: 'Perfil' },
 ]
 
