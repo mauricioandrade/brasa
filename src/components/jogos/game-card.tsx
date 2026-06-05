@@ -52,7 +52,7 @@ function StatusBadge({ status }: { status: Match['status'] }) {
   }
   // SCHEDULED
   return (
-    <span className="inline-flex items-center rounded-full bg-white/5 px-2 py-0.5 text-xs font-semibold text-white/40">
+    <span className="inline-flex items-center rounded-full bg-verde-500/10 px-2 py-0.5 text-xs font-semibold text-verde-500/70">
       {STATUS_LABELS[status]}
     </span>
   )
@@ -66,19 +66,39 @@ function formatTimeBRT(date: Date): string {
   }).format(date)
 }
 
+function formatDateBRT(date: Date): string {
+  return new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: 'numeric',
+    month: 'short',
+  })
+    .format(date)
+    .replace('.', '')
+    .toUpperCase()
+}
+
+function getTopBorderClass(status: Match['status']): string {
+  if (status === 'LIVE') return 'border-t-red-500'
+  if (status === 'FINISHED') return 'border-t-white/10'
+  return 'border-t-verde-500/40'
+}
+
 export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
   const [open, setOpen] = useState(false)
   const time = formatTimeBRT(match.scheduledAt)
+  const date = formatDateBRT(match.scheduledAt)
   const hasScore = match.homeScore !== null && match.awayScore !== null
   const canPredict =
     match.status === 'SCHEDULED' &&
     new Date() < new Date(match.scheduledAt.getTime() - 5 * 60 * 1000)
 
+  const topBorderClass = getTopBorderClass(match.status)
+
   return (
     <motion.div
-      className="rounded-2xl border border-white/5 p-5 flex flex-col gap-4"
+      className={`rounded-2xl border border-white/5 border-t-2 ${topBorderClass} p-5 flex flex-col gap-4`}
       style={{
-        background: 'linear-gradient(160deg, #0d1f0f 0%, #091508 100%)',
+        background: 'linear-gradient(160deg, rgba(13,31,15,0.95) 0%, rgba(9,21,8,0.98) 100%)',
       }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -88,44 +108,46 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
         delay: index * 0.05,
       }}
       whileHover={{
-        scale: 1.01,
-        borderColor: 'rgba(0,156,59,0.25)',
-        boxShadow: '0 0 24px rgba(0,156,59,0.08)',
+        scale: 1.015,
+        borderColor: 'rgba(0,156,59,0.35)',
+        boxShadow: '0 4px 32px rgba(0,156,59,0.12)',
       }}
     >
-      {/* Top row: status badge + time */}
+      {/* Top row: status badge + date/time */}
       <div className="flex items-center justify-between">
         <StatusBadge status={match.status} />
-        <span className="text-xs text-white/50 tabular-nums">{time} BRT</span>
+        <span className="text-xs text-white/40 tabular-nums">
+          {date} · {time} BRT
+        </span>
       </div>
 
       {/* Teams + score row */}
       <div className="flex items-center justify-between gap-2">
         {/* Home team */}
-        <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-          <span className="text-3xl leading-none">{match.homeFlag}</span>
-          <span className="font-display text-2xl text-white leading-none truncate w-full text-center">
+        <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
+          <span className="text-4xl leading-none">{match.homeFlag}</span>
+          <span className="font-display text-3xl text-white leading-none truncate w-full text-center">
             {match.homeTeam.toUpperCase()}
           </span>
         </div>
 
         {/* Score or separator */}
-        <div className="flex items-center justify-center px-2 shrink-0">
+        <div className="flex items-center justify-center px-3 shrink-0">
           {hasScore ? (
-            <span className="font-display text-4xl text-amarelo-400 tracking-widest leading-none">
-              {match.homeScore}
-              <span className="text-white/20 mx-1">:</span>
-              {match.awayScore}
-            </span>
+            <div className="bg-black/20 rounded-lg px-4 py-2 flex items-center gap-2">
+              <span className="font-display text-4xl text-amarelo-400">{match.homeScore}</span>
+              <span className="text-white/30">:</span>
+              <span className="font-display text-4xl text-amarelo-400">{match.awayScore}</span>
+            </div>
           ) : (
             <span className="font-display text-3xl text-white/20 leading-none">×</span>
           )}
         </div>
 
         {/* Away team */}
-        <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-          <span className="text-3xl leading-none">{match.awayFlag}</span>
-          <span className="font-display text-2xl text-white leading-none truncate w-full text-center">
+        <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
+          <span className="text-4xl leading-none">{match.awayFlag}</span>
+          <span className="font-display text-3xl text-white leading-none truncate w-full text-center">
             {match.awayTeam.toUpperCase()}
           </span>
         </div>
@@ -174,12 +196,17 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
 
       {/* User prediction display (when game not predictable) */}
       {userPrediction && !canPredict && !open && (
-        <p className="text-xs text-verde-500 text-center">
-          Seu palpite: {userPrediction.homeScore} × {userPrediction.awayScore}
-          {userPrediction.topScorerName && (
-            <span className="text-white/30"> · {userPrediction.topScorerName}</span>
-          )}
-        </p>
+        <div className="flex items-center justify-center">
+          <div className="flex items-center gap-2 py-1 px-3 rounded-full bg-verde-500/8 border border-verde-500/20">
+            <span className="text-xs text-verde-500/80">Seu palpite:</span>
+            <span className="text-xs text-verde-500 font-bold">
+              {userPrediction.homeScore} × {userPrediction.awayScore}
+            </span>
+            {userPrediction.topScorerName && (
+              <span className="text-xs text-white/30">· {userPrediction.topScorerName}</span>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Prediction section (when can predict) */}
@@ -187,12 +214,15 @@ export function GameCard({ match, userPrediction, index = 0 }: GameCardProps) {
         <div>
           {userPrediction && !open && (
             <div className="flex items-center justify-between">
-              <p className="text-xs text-verde-500">
-                Seu palpite: {userPrediction.homeScore} × {userPrediction.awayScore}
+              <div className="flex items-center gap-2 py-1 px-3 rounded-full bg-verde-500/8 border border-verde-500/20">
+                <span className="text-xs text-verde-500/80">Seu palpite:</span>
+                <span className="text-xs text-verde-500 font-bold">
+                  {userPrediction.homeScore} × {userPrediction.awayScore}
+                </span>
                 {userPrediction.topScorerName && (
-                  <span className="text-white/30"> · {userPrediction.topScorerName}</span>
+                  <span className="text-xs text-white/30">· {userPrediction.topScorerName}</span>
                 )}
-              </p>
+              </div>
               <button
                 onClick={() => setOpen(true)}
                 className="inline-flex items-center gap-1 h-8 px-4 rounded-full border border-verde-500/60 hover:border-verde-500 hover:bg-verde-500/10 text-verde-500 text-xs font-bold transition-all"

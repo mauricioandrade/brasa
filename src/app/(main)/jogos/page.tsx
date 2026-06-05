@@ -1,4 +1,5 @@
 import { GameCard } from '@/components/jogos/game-card'
+import { JogosBackground } from '@/components/jogos/jogos-background'
 import { PlayersBanner } from '@/components/layout/players-banner'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -28,40 +29,46 @@ export default async function JogosPage() {
   )
 
   return (
-    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 max-w-2xl mx-auto">
-      <h1 className="font-display text-8xl sm:text-9xl text-white leading-none mb-0 tracking-wide">
-        JOGOS
-      </h1>
-      <p className="text-xs text-white/30 mb-6 mt-2">
-        {matches.length} jogos · <span className="text-amarelo-400/70">Copa do Mundo 2026</span>
-      </p>
+    <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 relative">
+      <JogosBackground />
+      <div className="max-w-2xl mx-auto relative z-10">
+        <h1 className="font-display text-8xl sm:text-9xl text-white leading-none mb-0 tracking-wide">
+          JOGOS
+        </h1>
+        <p className="text-xs text-white/30 mb-6 mt-2">
+          {matches.length} jogos · <span className="text-amarelo-400/70">Copa do Mundo 2026</span>
+        </p>
 
-      <PlayersBanner />
+        <PlayersBanner />
 
-      <div className="mb-8" />
+        <div className="mb-8" />
 
-      {Object.entries(groups)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([group, games]) => (
-          <section key={group} className="mb-8">
-            <h2 className="font-display text-lg sm:text-xl text-amarelo-400 mb-3">
-              {group.length === 1 ? `Grupo ${group}` : group.replace(/_/g, ' ')}
-              <span className="font-sans text-xs text-white/30 ml-2 normal-case">
-                · {games.length} jogos
-              </span>
-            </h2>
-            <div className="flex flex-col gap-2">
-              {games.map((match, i) => (
-                <GameCard
-                  key={match.id}
-                  match={match}
-                  userPrediction={predictionMap.get(match.id) ?? undefined}
-                  index={i}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
+        {Object.entries(groups)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([group, games]) => (
+            <section key={group} className="mb-10">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="font-display text-xs text-brasa-bg bg-amarelo-400 rounded px-2 py-0.5 leading-tight">
+                  {group.length === 1 ? group : '·'}
+                </span>
+                <h2 className="font-display text-lg text-white leading-none">
+                  {group.length === 1 ? `GRUPO ${group}` : group.replace(/_/g, ' ')}
+                </h2>
+                <span className="text-xs text-white/25">· {games.length} jogos</span>
+              </div>
+              <div className="flex flex-col gap-3">
+                {games.map((match, i) => (
+                  <GameCard
+                    key={match.id}
+                    match={match}
+                    userPrediction={predictionMap.get(match.id) ?? undefined}
+                    index={i}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
+      </div>
     </main>
   )
 }
