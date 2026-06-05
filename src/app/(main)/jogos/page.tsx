@@ -1,5 +1,4 @@
 import { GameCard } from '@/components/jogos/game-card'
-import { JogosBackground } from '@/components/jogos/jogos-background'
 import { PlayersBanner } from '@/components/layout/players-banner'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -30,7 +29,6 @@ export default async function JogosPage() {
 
   return (
     <main className="min-h-screen bg-brasa-bg px-4 sm:px-6 py-8 relative">
-      <JogosBackground />
       <div className="max-w-2xl mx-auto relative z-10">
         <h1 className="font-display text-8xl sm:text-9xl text-white leading-none mb-0 tracking-wide">
           JOGOS
