@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 import type { Easing } from 'framer-motion'
 
 import { BrasaLogo } from '@/components/brasa/logo'
+import { UpcomingMatches } from '@/components/brasa/upcoming-matches'
 
 const ease: Easing = 'easeOut'
 
@@ -200,6 +201,9 @@ function HomeContent() {
             Ver ranking
           </Link>
         </motion.div>
+
+        {/* Próximos jogos */}
+        <UpcomingMatches />
 
         {/* Footer */}
         <motion.div className="flex flex-col items-center gap-1.5 text-center" {...fadeIn(1.25)}>

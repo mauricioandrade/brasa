@@ -21,16 +21,19 @@ function ScoreButton({
   label,
   onClick,
   variant,
+  disabled,
 }: {
   label: string
   onClick: () => void
   variant: 'minus' | 'plus'
+  disabled?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`w-8 h-8 rounded-full flex items-center justify-center text-base font-bold transition-colors ${
+      disabled={disabled}
+      className={`w-8 h-8 rounded-full flex items-center justify-center text-base font-bold transition-colors disabled:opacity-25 disabled:cursor-not-allowed ${
         variant === 'plus'
           ? 'bg-verde-500/20 border border-verde-500/40 text-verde-400 hover:bg-verde-500/30'
           : 'border border-white/15 text-white/40 hover:text-white hover:border-white/30'
@@ -100,6 +103,7 @@ export function PredictionForm({
             <ScoreButton
               label="−"
               variant="minus"
+              disabled={homeScore === 0}
               onClick={() => setHomeScore((s) => Math.max(0, s - 1))}
             />
             <span className="font-display text-3xl text-white min-w-[1.5ch] text-center">
@@ -108,6 +112,7 @@ export function PredictionForm({
             <ScoreButton
               label="+"
               variant="plus"
+              disabled={homeScore === 20}
               onClick={() => setHomeScore((s) => Math.min(20, s + 1))}
             />
           </div>
@@ -122,6 +127,7 @@ export function PredictionForm({
             <ScoreButton
               label="−"
               variant="minus"
+              disabled={awayScore === 0}
               onClick={() => setAwayScore((s) => Math.max(0, s - 1))}
             />
             <span className="font-display text-3xl text-white min-w-[1.5ch] text-center">
@@ -130,6 +136,7 @@ export function PredictionForm({
             <ScoreButton
               label="+"
               variant="plus"
+              disabled={awayScore === 20}
               onClick={() => setAwayScore((s) => Math.min(20, s + 1))}
             />
           </div>

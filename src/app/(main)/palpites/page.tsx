@@ -21,29 +21,49 @@ export default async function PalpitesPage() {
   const finished = predictions.filter((p) => p.match.homeScore !== null)
   const pending = predictions.filter((p) => p.match.homeScore === null)
 
+  const calculated = finished.filter((p) => p.calculated)
+  const hits = calculated.filter((p) => p.pointsEarned > 0).length
+  const accuracy = calculated.length > 0 ? Math.round((hits / calculated.length) * 100) : null
+
   return (
     <main className="min-h-screen px-4 sm:px-6 py-8 max-w-2xl mx-auto">
-      <h1 className="font-display text-4xl text-white mb-1">Meus Palpites</h1>
+      <h1 className="font-display text-4xl text-white mb-6">Meus Palpites</h1>
 
-      {count > 0 && (
-        <p className="text-xs text-white/30 mb-8">
-          <span className="font-display text-3xl text-amarelo-400 mr-1">{totalPoints}</span>
-          pontos · {count} palpites
-        </p>
-      )}
-
-      {count === 0 && (
+      {count === 0 ? (
         <div className="text-center py-12">
           <p className="text-white/40 mb-4">Você ainda não fez nenhum palpite.</p>
           <Link href="/jogos" className="text-verde-500 hover:text-verde-400 font-semibold">
             Ver jogos e palpitar →
           </Link>
         </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          <div
+            className="rounded-xl border border-amarelo-400/20 p-3"
+            style={{ background: 'linear-gradient(135deg, #0d1f0f 0%, #141400 100%)' }}
+          >
+            <p className="font-display text-3xl text-amarelo-400">{totalPoints}</p>
+            <p className="text-[11px] text-white/40 mt-0.5">pontos</p>
+          </div>
+          <div
+            className="rounded-xl border border-verde-500/20 p-3"
+            style={{ background: 'linear-gradient(135deg, #0d1f0f 0%, #001a08 100%)' }}
+          >
+            <p className="font-display text-3xl text-verde-500">
+              {accuracy !== null ? `${accuracy}%` : '—'}
+            </p>
+            <p className="text-[11px] text-white/40 mt-0.5">acertos</p>
+          </div>
+          <div className="rounded-xl border border-white/5 bg-brasa-surface p-3">
+            <p className="font-display text-3xl text-white/80">{count}</p>
+            <p className="text-[11px] text-white/40 mt-0.5">palpites</p>
+          </div>
+        </div>
       )}
 
       {finished.length > 0 && (
         <section className="mb-8">
-          <h2 className="font-display text-lg text-white/50 mb-3">
+          <h2 className="font-display text-xl text-white/75 mb-3">
             Encerrados
             <span className="font-sans text-xs text-white/30 ml-2 normal-case">
               · {finished.length}
@@ -59,7 +79,7 @@ export default async function PalpitesPage() {
 
       {pending.length > 0 && (
         <section>
-          <h2 className="font-display text-lg text-white/50 mb-3">
+          <h2 className="font-display text-xl text-white/75 mb-3">
             Aguardando
             <span className="font-sans text-xs text-white/30 ml-2 normal-case">
               · {pending.length}
