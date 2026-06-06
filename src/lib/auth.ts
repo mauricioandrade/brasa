@@ -28,6 +28,20 @@ export const {
   ],
   callbacks: {
     ...authConfig.callbacks,
+    async signIn({ user }) {
+      const adminEmails = (process.env.ADMIN_EMAILS ?? '')
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean)
+
+      if (user.email && adminEmails.includes(user.email.toLowerCase())) {
+        await db.user.update({
+          where: { email: user.email },
+          data: { role: 'ADMIN' },
+        })
+      }
+      return true
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
