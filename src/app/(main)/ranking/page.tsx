@@ -12,7 +12,8 @@ export default async function RankingPage() {
     db.prediction.groupBy({
       by: ['userId'],
       _sum: { pointsEarned: true },
-      orderBy: { _sum: { pointsEarned: 'desc' } },
+      _count: { id: true },
+      orderBy: [{ _sum: { pointsEarned: 'desc' } }, { _count: { id: 'desc' } }],
     }),
   ])
 

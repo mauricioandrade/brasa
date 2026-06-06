@@ -25,6 +25,14 @@ function getWinner(home: number, away: number): 'home' | 'away' | 'draw' {
   return 'draw'
 }
 
+function normalizeStr(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim()
+}
+
 export function calculatePoints(prediction: PredictionInput, result: MatchResult): number {
   let points = 0
 
@@ -45,7 +53,7 @@ export function calculatePoints(prediction: PredictionInput, result: MatchResult
   if (
     prediction.topScorerName &&
     result.topScorerName &&
-    prediction.topScorerName.toLowerCase() === result.topScorerName.toLowerCase()
+    normalizeStr(prediction.topScorerName) === normalizeStr(result.topScorerName)
   ) {
     points += 2
   }
