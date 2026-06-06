@@ -8,7 +8,9 @@ import { db } from '@/lib/db'
 import { computeStreak, getNextRank, getProgress, getRank } from '@/lib/gamification'
 
 import { RankMedal } from '@/components/brasa/rank-medal'
+import { DeleteAccountButton } from '@/components/perfil/delete-account-button'
 
+import { deleteAccount } from './actions'
 import { ProgressBar } from './progress-bar'
 
 export default async function PerfilPage() {
@@ -328,6 +330,11 @@ export default async function PerfilPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Danger zone */}
+      <div className="mt-8 flex justify-center">
+        <DeleteAccountButton deleteAccount={deleteAccount} />
       </div>
     </main>
   )
