@@ -22,14 +22,40 @@ const CATEGORIES: { value: AwardCategory; label: string }[] = [
   { value: 'BEST_DEFENSE', label: '🛡️ Melhor Defesa' },
 ]
 
+const VALID_PHASES = [
+  'GROUP',
+  'ROUND_OF_16',
+  'QUARTER_FINAL',
+  'SEMI_FINAL',
+  'THIRD_PLACE',
+  'FINAL',
+] as const
+
+const VALID_CATEGORIES = [
+  'TOP_SCORER',
+  'BEST_GOALKEEPER',
+  'BEST_PLAYER',
+  'BEST_DEFENSE',
+] as const
+
 async function upsertPhaseAward(formData: FormData) {
   'use server'
 
   const session = await auth()
   if (session?.user?.role !== 'ADMIN') throw new Error('Unauthorized')
 
-  const phase = formData.get('phase') as Phase
-  const category = formData.get('category') as AwardCategory
+  const phaseRaw = formData.get('phase') as string
+  const categoryRaw = formData.get('category') as string
+
+  if (!VALID_PHASES.includes(phaseRaw as (typeof VALID_PHASES)[number])) {
+    throw new Error('Fase inválida')
+  }
+  if (!VALID_CATEGORIES.includes(categoryRaw as (typeof VALID_CATEGORIES)[number])) {
+    throw new Error('Categoria inválida')
+  }
+
+  const phase = phaseRaw as Phase
+  const category = categoryRaw as AwardCategory
   const playerName = (formData.get('playerName') as string).trim()
   const team = (formData.get('team') as string).trim()
   const flag = (formData.get('flag') as string).trim()

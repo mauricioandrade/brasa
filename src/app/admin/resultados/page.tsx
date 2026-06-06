@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
@@ -6,6 +6,8 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { calculatePoints } from '@/lib/scoring'
 import type { Phase } from '@/types'
+
+const VALID_STATUSES = ['SCHEDULED', 'LIVE', 'FINISHED', 'CANCELLED'] as const
 
 async function updateMatchResult(formData: FormData) {
   'use server'
@@ -18,7 +20,12 @@ async function updateMatchResult(formData: FormData) {
   const awayScoreRaw = formData.get('awayScore') as string
   const homeScore = homeScoreRaw !== '' ? Number(homeScoreRaw) : NaN
   const awayScore = awayScoreRaw !== '' ? Number(awayScoreRaw) : NaN
-  const status = formData.get('status') as 'SCHEDULED' | 'LIVE' | 'FINISHED' | 'CANCELLED'
+
+  const statusRaw = formData.get('status') as string
+  if (!VALID_STATUSES.includes(statusRaw as (typeof VALID_STATUSES)[number])) {
+    throw new Error('Status inválido')
+  }
+  const status = statusRaw as 'SCHEDULED' | 'LIVE' | 'FINISHED' | 'CANCELLED'
 
   const match = await db.match.update({
     where: { id: matchId },
@@ -27,12 +34,15 @@ async function updateMatchResult(formData: FormData) {
       awayScore: isNaN(awayScore) ? null : awayScore,
       status,
     },
-    include: { predictions: true },
   })
 
   if (status === 'FINISHED' && match.homeScore !== null && match.awayScore !== null) {
+    const predictions = await db.prediction.findMany({
+      where: { matchId, calculated: false },
+    })
+
     await Promise.all(
-      match.predictions.map((p) => {
+      predictions.map((p) => {
         const points = calculatePoints(
           { homeScore: p.homeScore, awayScore: p.awayScore, topScorerName: p.topScorerName },
           {
@@ -48,6 +58,7 @@ async function updateMatchResult(formData: FormData) {
       }),
     )
     revalidateTag('ranking', {})
+    revalidatePath('/jogos')
   }
 
   redirect('/admin/jogos')
