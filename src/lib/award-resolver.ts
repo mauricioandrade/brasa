@@ -42,7 +42,7 @@ export async function resolvePhaseAwards(phase: Phase): Promise<void> {
   // --- TOP_SCORER ---
   const scorerCounts = new Map<string, number>()
   for (const m of matches) {
-    if (m.topScorerName) {
+    if (m.topScorerName && m.topScorerName.trim() !== '') {
       scorerCounts.set(m.topScorerName, (scorerCounts.get(m.topScorerName) ?? 0) + 1)
     }
   }
@@ -83,9 +83,11 @@ export async function resolvePhaseAwards(phase: Phase): Promise<void> {
   }
 
   if (goalsConceded.size > 0) {
-    const [bestDefenseTeam, conceded] = [...goalsConceded.entries()].sort(
-      (a, b) => a[1] - b[1],
-    )[0]
+    const sorted = [...goalsConceded.entries()].sort((a, b) => {
+      if (a[1] !== b[1]) return a[1] - b[1]
+      return a[0].localeCompare(b[0])
+    })
+    const [bestDefenseTeam, conceded] = sorted[0]
     const defenseFlag = TEAM_FLAGS[bestDefenseTeam] ?? '🏳️'
 
     results.push({
@@ -108,8 +110,8 @@ export async function resolvePhaseAwards(phase: Phase): Promise<void> {
     })
   }
 
-  // Upsert all computed awards
-  await Promise.all(
+  // Upsert all computed awards atomically
+  await db.$transaction(
     results.map((r) =>
       db.phaseAward.upsert({
         where: { phase_category: { phase, category: r.category } },
