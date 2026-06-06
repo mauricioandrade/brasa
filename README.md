@@ -47,50 +47,69 @@ GitHub Actions (a cada 15 min)
     → ESPN API
       → Match FINISHED? → atualiza placar
         → calcula pontos de cada Prediction (lib/scoring.ts)
+          → award-resolver computa vencedores da fase automaticamente
 ```
 
 ---
 
-## Estado atual
+## Funcionalidades
 
-| Funcionalidade                                            | Status      |
-| --------------------------------------------------------- | ----------- |
-| Scaffold Next.js 16 + TypeScript strict + Tailwind 4      | ✅ Feito    |
-| NextAuth v5 — Google + GitHub OAuth                       | ✅ Feito    |
-| Prisma 7 + PostgreSQL (Neon) com adapter Neon             | ✅ Feito    |
-| Schema: User, Account, Session, Match, Prediction         | ✅ Feito    |
-| Seed: **72 jogos reais** da fase de grupos (grupos A–L)   | ✅ Feito    |
-| Motor de pontuação (`lib/scoring.ts`)                     | ✅ Feito    |
-| Sistema de ranks: Torcedor → Reserva → Titular → Lenda    | ✅ Feito    |
-| `GET /api/jogos` — lista jogos com paginação              | ✅ Feito    |
-| `POST /api/palpites` — salva com lock 5 min antes kickoff | ✅ Feito    |
-| `GET /api/palpites` — histórico do usuário                | ✅ Feito    |
-| Rate limiting via banco (10 req/min por usuário)          | ✅ Feito    |
-| Cron job GitHub Actions (a cada 15 min)                   | ✅ Feito    |
-| Security headers + admin guard por role ADMIN             | ✅ Feito    |
-| CI GitHub Actions (lint + typecheck em PRs)               | ✅ Feito    |
-| Deploy Vercel (https://brasa-pi.vercel.app)               | ✅ Feito    |
-| Figurinhas Panini dos jogadores (TheSportsDB)             | ✅ Feito    |
-| Banner de estrelas da Copa com scroll infinito            | ✅ Feito    |
-| Animações com Framer Motion + tsparticles                 | ✅ Feito    |
-| Loading skeletons em todas as páginas                     | ✅ Feito    |
-| Painel admin para override de resultados                  | ✅ Feito    |
-| Fase de mata-mata (32 avos → final)                       | ⏳ Pendente |
-| Artilheiro real via cron                                  | ⏳ Pendente |
+| Funcionalidade                                            | Status   |
+| --------------------------------------------------------- | -------- |
+| Scaffold Next.js 16 + TypeScript strict + Tailwind 4      | ✅       |
+| NextAuth v5 — Google + GitHub OAuth                       | ✅       |
+| Prisma 7 + PostgreSQL (Neon) com adapter Neon             | ✅       |
+| Schema: User, Account, Session, Match, Prediction         | ✅       |
+| Seed: 72 jogos reais da fase de grupos (grupos A–L)       | ✅       |
+| Motor de pontuação com normalização de acentos            | ✅       |
+| Sistema de ranks: Torcedor → Reserva → Titular → Lenda    | ✅       |
+| Rate limiting (10 req/min por usuário)                    | ✅       |
+| Cron job GitHub Actions (a cada 15 min)                   | ✅       |
+| Security headers + admin guard por role ADMIN             | ✅       |
+| CI GitHub Actions (lint + typecheck em PRs)               | ✅       |
+| Deploy Vercel (https://brasa-pi.vercel.app)               | ✅       |
+| Figurinhas dos jogadores com foto real (TheSportsDB)      | ✅       |
+| Banner de estrelas da Copa com scroll infinito            | ✅       |
+| Animações com Framer Motion + tsparticles                 | ✅       |
+| Painel admin para override de resultados e prêmios        | ✅       |
+| Formulário de palpite com cards de foto do artilheiro     | ✅       |
+| Ranking com medalhas SVG (ouro/prata/bronze/troféu)       | ✅       |
+| Perfil com medalha automática para top 3                  | ✅       |
+| Streak de acertos (sequência atual e melhor sequência)    | ✅       |
+| 8 conquistas desbloqueáveis no perfil                     | ✅       |
+| Leaderboard relativo ("X pts para subir uma posição")     | ✅       |
+| Previsões de prêmios por fase (atacante, goleiro, etc.)   | ✅       |
+| Auto-resolução de prêmios ao fim de cada fase             | ✅       |
+| Página de prêmios `/premios` com cards por fase           | ✅       |
+| Conformidade básica com LGPD                              | ✅       |
+| Exclusão de conta com confirmação                         | ✅       |
+| Fase de mata-mata (32 avos → final)                       | ⏳       |
 
 ---
 
 ## Sistema de pontuação
 
-| Acerto                     |   Pontos |
-| -------------------------- | -------: |
-| 🏆 Placar exato            |    **7** |
-| ✅ Vencedor correto        |    **3** |
-| 🤝 Empate correto          |    **4** |
-| ⚽ Artilheiro do jogo      |    **2** |
-| 🔥 Multiplicador mata-mata | **1.5×** |
+| Acerto                        |   Pontos |
+| ----------------------------- | -------: |
+| 🏆 Placar exato               |    **7** |
+| ✅ Vencedor correto           |    **3** |
+| 🤝 Empate correto             |    **4** |
+| ⚽ Artilheiro do jogo         |    **2** |
+| 🏅 Prêmio de fase correto     |    **5** |
+| 🔥 Multiplicador mata-mata    | **1.5×** |
 
 > Os palpites fecham automaticamente **5 minutos antes do kickoff**. Sem volta.
+
+### Prêmios de fase
+
+Antes de cada fase, os usuários apostam em quatro categorias. Quando todos os jogos da fase encerram, o sistema auto-computa os vencedores a partir dos dados do banco:
+
+| Categoria         | Como é calculado                                         |
+| ----------------- | -------------------------------------------------------- |
+| ⚽ Artilheiro     | Jogador mais vezes registrado como `topScorerName`       |
+| 🧤 Melhor goleiro | Goleiro do time com menos gols sofridos na fase          |
+| 🛡️ Melhor defesa  | Time com menos gols sofridos (desempate alfabético)      |
+| ⭐ Melhor jogador | Mesmo critério do artilheiro                             |
 
 ### Sistema de ranks
 
@@ -144,35 +163,52 @@ brasa/
 │   ├── app/
 │   │   ├── (auth)/login/           # Login (Google + GitHub)
 │   │   ├── (main)/
-│   │   │   ├── jogos/              # 72+ jogos com palpite inline e figurinhas
+│   │   │   ├── jogos/              # Jogos com palpite inline e figurinhas
 │   │   │   ├── palpites/           # Histórico agrupado com total de pts
-│   │   │   ├── ranking/            # Leaderboard com top 3 e rank badges
-│   │   │   └── perfil/             # Stats, rank, conquistas, progressão
-│   │   ├── admin/                  # Painel admin (guard por role ADMIN)
+│   │   │   ├── ranking/            # Leaderboard + medalhas SVG + relativo
+│   │   │   ├── premios/            # Prêmios por fase + previsões do usuário
+│   │   │   ├── perfil/             # Stats, rank, conquistas, medalha top 3
+│   │   │   ├── privacidade/        # Política de privacidade (LGPD)
+│   │   │   └── termos/             # Termos de uso
+│   │   ├── admin/
+│   │   │   ├── jogos/              # Gerenciar jogos
+│   │   │   ├── resultados/         # Lançar resultados e artilheiros
+│   │   │   └── premios/            # Cadastrar prêmios de fase
 │   │   └── api/
 │   │       ├── auth/               # NextAuth handlers
 │   │       ├── jogos/              # GET — lista jogos
+│   │       ├── jogos/proximos/     # GET — próximos 3 jogos
 │   │       ├── palpites/           # GET/POST — histórico e salvar palpites
+│   │       ├── premios/            # GET — prêmios de fase
+│   │       ├── award-predictions/  # GET/POST — previsões de prêmios
+│   │       ├── award-candidates/   # GET — candidatos por categoria
+│   │       ├── admin/resolve-phase/# POST — resolver fase manualmente
 │   │       ├── players/
-│   │       │   ├── top/            # GET — estrelas da Copa (para banner)
-│   │       │   └── photo/          # GET — foto do jogador via TheSportsDB
-│   │       └── cron/resultados/    # Cron — busca placares e calcula pontos
+│   │       │   ├── top/            # GET — estrelas da Copa (banner)
+│   │       │   └── photo/          # GET — foto via TheSportsDB (timeout 5s)
+│   │       └── cron/resultados/    # Cron — placares e pontos automáticos
 │   ├── components/
-│   │   ├── brasa/                  # Logo, home animada, figurinhas Panini
+│   │   ├── brasa/                  # Logo, home animada, figurinhas, medalhas SVG
 │   │   ├── jogos/                  # Cards de jogo com figurinhas das estrelas
-│   │   ├── layout/                 # Header, banner de estrelas
-│   │   ├── palpites/               # Formulário e histórico
-│   │   ├── ranking/                # Tabela de ranking
+│   │   ├── layout/                 # Header, footer, cookie banner, nav
+│   │   ├── lgpd/                   # Cookie banner
+│   │   ├── palpites/               # Formulário com foto do artilheiro, histórico
+│   │   ├── perfil/                 # Barra de progresso, exclusão de conta
+│   │   ├── premios/                # Cards de prêmio, abas de fase, previsões
+│   │   ├── ranking/                # Tabela com medalhas SVG e highlight do usuário
 │   │   └── ui/                     # shadcn/ui
 │   └── lib/
-│       ├── auth.ts                 # NextAuth config
+│       ├── auth.ts                 # NextAuth config + promoção admin via env
+│       ├── award-resolver.ts       # Auto-computa vencedores de fase
 │       ├── db.ts                   # Prisma Client (Neon adapter)
-│       ├── gamification.ts         # Ranks e progressão
-│       ├── scoring.ts              # Motor de pontuação (função pura)
-│       └── team-data.ts            # Cores e estrelas de todas as 48 seleções
+│       ├── gamification.ts         # Ranks, progressão e streaks
+│       ├── scoring.ts              # Motor de pontuação (normaliza acentos)
+│       └── team-data.ts            # Cores, estrelas e goleiros das 48 seleções
 ├── prisma/
 │   ├── schema.prisma               # Fonte de verdade do banco
 │   └── seed.ts                     # 72 jogos reais da fase de grupos (A–L)
+├── scripts/
+│   └── make-admin.ts               # Promove usuário a ADMIN por e-mail
 └── .github/workflows/
     ├── ci.yml                      # CI: lint + typecheck em PRs
     └── cron.yml                    # Cron: atualiza placares a cada 15 min
@@ -182,13 +218,18 @@ brasa/
 
 ```
 User ──< Prediction >── Match
+ │   └──< AwardPrediction
  └──< Account
  └──< Session
+
+Match ──< PhaseAward (vencedores auto-computados por fase)
 ```
 
 - **User** — conta OAuth (Google ou GitHub); role USER ou ADMIN
-- **Match** — jogo da Copa com status SCHEDULED/LIVE/FINISHED/CANCELLED; atualizado pelo cron
+- **Match** — jogo da Copa com status SCHEDULED/LIVE/FINISHED/CANCELLED
 - **Prediction** — palpite com placar + artilheiro opcional; armazena `pointsEarned` e flag `calculated`
+- **AwardPrediction** — aposta do usuário no melhor jogador por categoria/fase
+- **PhaseAward** — vencedor oficial de cada categoria por fase (auto-resolvido)
 
 ---
 
@@ -215,6 +256,7 @@ AUTH_GOOGLE_SECRET="..."
 AUTH_GITHUB_ID="..."
 AUTH_GITHUB_SECRET="..."
 CRON_SECRET="..."                    # openssl rand -base64 32
+ADMIN_EMAILS="voce@email.com"        # Separar por vírgula para múltiplos admins
 ```
 
 ```bash
@@ -233,6 +275,33 @@ pnpm typecheck      # tsc --noEmit
 pnpm db:seed        # popular com os 72 jogos da fase de grupos
 pnpm db:studio      # Prisma Studio (UI do banco)
 ```
+
+---
+
+## Tornando-se admin
+
+Com OAuth puro (Google/GitHub), há duas formas de obter role ADMIN:
+
+**Via env var (recomendado):** adicione seu e-mail em `ADMIN_EMAILS` no `.env.local` e faça login. O sistema promove automaticamente.
+
+**Via script (imediato):** se já tem conta criada:
+
+```bash
+npx tsx scripts/make-admin.ts voce@email.com
+```
+
+Após virar admin, acesse `/admin/jogos`, `/admin/resultados` e `/admin/premios`.
+
+---
+
+## LGPD
+
+O Brasa implementa os requisitos básicos da Lei Geral de Proteção de Dados:
+
+- **`/privacidade`** — política de privacidade completa
+- **`/termos`** — termos de uso do bolão
+- Cookie banner não-bloqueante com consentimento via localStorage
+- Exclusão de conta com confirmação (digitar "EXCLUIR") e cascata no banco
 
 ---
 
@@ -261,6 +330,8 @@ ci:       CI/CD
 | v0.3 — Pontuação (motor de pontos, cron de resultados) | ✅ Concluído |
 | v0.4 — Ranking (ranking geral, perfil, gamificação)    | ✅ Concluído |
 | v0.5 — Visual (figurinhas, animações, identidade)      | ✅ Concluído |
+| v0.6 — Gamificação avançada (prêmios, medalhas, streaks) | ✅ Concluído |
+| v0.7 — Segurança e LGPD                               | ✅ Concluído |
 | v1.0 — Copa ao vivo (mata-mata, ao vivo, performance)  | ⏳ Pendente  |
 
 ---
