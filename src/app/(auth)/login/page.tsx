@@ -3,15 +3,30 @@ import { redirect } from 'next/navigation'
 import { BrasaLogo } from '@/components/brasa/logo'
 import { auth, signIn } from '@/lib/auth'
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ deleted?: string }>
+}) {
   const session = await auth()
   if (session) redirect('/jogos')
+
+  const { deleted } = await searchParams
 
   return (
     <main className="min-h-screen bg-brasa-bg flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm flex flex-col items-center gap-10">
         {/* Logo */}
         <BrasaLogo size="sm" />
+
+        {/* Deleted account message */}
+        {deleted === 'true' && (
+          <div className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center">
+            <p className="text-white/50 text-sm leading-relaxed">
+              Sua conta foi excluída com sucesso. Seus dados foram removidos.
+            </p>
+          </div>
+        )}
 
         {/* Heading */}
         <div className="flex flex-col items-center gap-2 text-center">
@@ -79,7 +94,21 @@ export default async function LoginPage() {
         </div>
 
         <p className="text-white/25 text-xs text-center leading-relaxed">
-          Ao entrar você concorda em participar do bolão mais quente da Copa
+          Ao entrar você concorda com os{' '}
+          <a
+            href="/termos"
+            className="underline underline-offset-2 hover:text-white/40 transition-colors"
+          >
+            termos de uso
+          </a>{' '}
+          e a{' '}
+          <a
+            href="/privacidade"
+            className="underline underline-offset-2 hover:text-white/40 transition-colors"
+          >
+            política de privacidade
+          </a>
+          .
         </p>
       </div>
     </main>
