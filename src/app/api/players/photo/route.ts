@@ -10,10 +10,12 @@ export async function GET(req: Request) {
     return NextResponse.json({ photoUrl: null })
   }
 
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
   try {
     const res = await fetch(
       `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(name)}`,
-      { next: { revalidate: 86400 } },
+      { signal: controller.signal, next: { revalidate: 86400 } },
     )
     const data = (await res.json()) as {
       player: Array<{ strCutout?: string; strThumb?: string }> | null
@@ -23,5 +25,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ photoUrl })
   } catch {
     return NextResponse.json({ photoUrl: null })
+  } finally {
+    clearTimeout(timeout)
   }
 }

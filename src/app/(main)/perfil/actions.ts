@@ -10,6 +10,7 @@ export async function deleteAccount() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
+  await db.session.deleteMany({ where: { userId: session.user.id } })
   await db.user.delete({ where: { id: session.user.id } })
 
   await signOut({ redirect: false })
