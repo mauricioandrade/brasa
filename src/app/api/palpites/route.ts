@@ -40,7 +40,9 @@ export async function POST(request: Request) {
       homeScore < 0 ||
       awayScore < 0 ||
       homeScore > 20 ||
-      awayScore > 20
+      awayScore > 20 ||
+      (topScorerName !== undefined && topScorerName !== null && typeof topScorerName !== 'string') ||
+      (typeof topScorerName === 'string' && topScorerName.length > 100)
     ) {
       return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
     }

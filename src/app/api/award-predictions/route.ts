@@ -78,8 +78,10 @@ export async function POST(req: Request) {
     !VALID_CATEGORIES.includes(category as AwardCategory) ||
     typeof playerName !== 'string' ||
     playerName.trim().length === 0 ||
+    playerName.length > 100 ||
     typeof team !== 'string' ||
-    team.trim().length === 0
+    team.trim().length === 0 ||
+    team.length > 100
   ) {
     return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
   }
