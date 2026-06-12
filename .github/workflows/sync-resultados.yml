@@ -2,7 +2,7 @@ name: Sync Resultados
 
 on:
   schedule:
-    - cron: '*/15 * * * *'   # a cada 15 min (mínimo confiável no GitHub Actions)
+    - cron: '4,19,34,49 * * * *'   # a cada 15 min, fora dos minutos cheios congestionados do GitHub
   workflow_dispatch:          # permite rodar manualmente
 
 jobs:

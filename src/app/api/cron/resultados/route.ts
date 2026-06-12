@@ -67,7 +67,18 @@ export async function GET(request: Request) {
         include: { predictions: true },
       })
 
-      if (!match) continue
+      if (!match) {
+        const exists = await db.match.findFirst({
+          where: { homeTeam, awayTeam },
+          select: { id: true },
+        })
+        if (!exists) {
+          console.warn(
+            `[cron] jogo encerrado sem correspondencia no banco: ${homeTeam} x ${awayTeam} (${fdMatch.utcDate})`,
+          )
+        }
+        continue
+      }
 
       // Atualizar placar
       await db.match.update({
